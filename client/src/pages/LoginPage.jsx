@@ -224,7 +224,7 @@ export default function LoginPage() {
           align="center"
           sx={{ mt: 8, mb: 4 }}
         >
-          © {new Date().getFullYear()} Ezed Dev. All rights reserved.
+          © {new Date().getFullYear()} Z Dev. All rights reserved.
         </Typography>
       </Container>
     </ThemeProvider>
