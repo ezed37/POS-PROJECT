@@ -1,7 +1,35 @@
-import { Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useContext } from "react";
+import LoginPage from "./pages/LoginPage";
+import AuthContext from "./auth/AuthContext";
+import AdminPage from "./pages/AdminPage";
+import CashierPage from "./pages/CashierPage";
 
 function App() {
-  return <Routes></Routes>;
+  const { user } = useContext(AuthContext);
+
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+
+      <Route
+        path="/*"
+        element={
+          !user ? (
+            <Navigate to="/login" replace />
+          ) : user.role === "admin" ? (
+            <AdminPage />
+          ) : user.role === "cashier" ? (
+            <CashierPage />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  );
 }
 
 export default App;

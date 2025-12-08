@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import {
   Avatar,
   Box,
@@ -11,44 +12,125 @@ import {
   Grid,
   ThemeProvider,
   createTheme,
+  Alert,
+  Snackbar,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { red } from "@mui/material/colors";
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#ef233c", // Your requested color
-    },
-    error: red,
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-  },
-});
+import Visibility from "@mui/icons-material/Visibility";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthContext from "../auth/AuthContext";
 
 export default function LoginPage() {
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState("light");
 
-  const handleSubmit = () => {
-    event.preventDefault();
-    // Add your login logic here (e.g., API call)
-    console.log("Login attempted:", { username, password });
+  //Themese
+  const theme = createTheme({
+    palette: {
+      mode: mode,
+      primary: {
+        main: "#ef233c",
+      },
+      error: red,
+    },
+    typography: {
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    },
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!username.trim() || !password.trim()) {
+      setError("Username and password cannot be empty.");
+      handleOpen();
+      return;
+    }
+
+    setError("");
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/users/login`,
+        {
+          username,
+          password,
+        }
+      );
+      login(res.data.token);
+      navigate("/");
+    } catch (error) {
+      setError("Invalid Username or Password!");
+      console.error({ message: "Invalid username or password!" });
+      handleOpen();
+    }
   };
 
   const handleReset = () => {
     setUsername("");
     setPassword("");
+    setShowPassword(false);
   };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const toggleMode = () => {
+    setMode((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
+  //Test
 
   return (
     <ThemeProvider theme={theme}>
+      <Box
+        sx={{
+          position: "fixed",
+          top: 16,
+          right: 16,
+          zIndex: 1300,
+          bgcolor: "background.paper",
+          borderRadius: "50%",
+          boxShadow: 3,
+        }}
+      >
+        <IconButton onClick={toggleMode} color="inherit" size="large">
+          {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+        </IconButton>
+      </Box>
+
+      <Snackbar
+        open={open}
+        autoHideDuration={1000}
+        onClose={handleClose}
+        message={error}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      />
+
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 12,
+            marginTop: 6,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -79,7 +161,7 @@ export default function LoginPage() {
               required
               fullWidth
               id="username"
-              label="Username or Email"
+              label="Username"
               name="username"
               autoComplete="username"
               autoFocus
@@ -92,15 +174,25 @@ export default function LoginPage() {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                ),
+              }}
             />
 
             <Grid container spacing={2} sx={{ mt: 3 }}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Button
                   type="submit"
                   fullWidth
@@ -111,7 +203,7 @@ export default function LoginPage() {
                   Sign In
                 </Button>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <Button
                   fullWidth
                   variant="outlined"
@@ -123,19 +215,6 @@ export default function LoginPage() {
                 </Button>
               </Grid>
             </Grid>
-
-            <Grid container sx={{ mt: 3 }}>
-              <Grid item xs>
-                <Link href="#" variant="body2" underline="hover">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2" underline="hover">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
 
@@ -145,7 +224,7 @@ export default function LoginPage() {
           align="center"
           sx={{ mt: 8, mb: 4 }}
         >
-          © {new Date().getFullYear()} Your Company Name. All rights reserved.
+          © {new Date().getFullYear()} Ezed Dev. All rights reserved.
         </Typography>
       </Container>
     </ThemeProvider>
