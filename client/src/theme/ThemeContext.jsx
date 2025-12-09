@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material";
 const ThemeContext = createContext();
 
 export const ThemeProviderCustom = ({ children }) => {
-  const [mode, setMode] = useState("light"); // default mode
+  const [mode, setMode] = useState("light");
 
   // toggle function
   const toggleMode = () =>

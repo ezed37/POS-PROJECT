@@ -87,7 +87,7 @@ const Dashboard = ({ chartData }) => {
               subtitle="Total transactions today"
               icon={ShoppingCart}
               iconColor={theme.palette.error.main}
-              iconBg={`${theme.palette.error.main}20`} // 12% opacity
+              iconBg={`${theme.palette.error.main}20`}
             />
           </Grid>
 

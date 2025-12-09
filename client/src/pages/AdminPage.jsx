@@ -8,6 +8,7 @@ import Sidebar from "../components/SideBar";
 import DashboardPage from "./DashboardPage.jsx";
 import { useContext } from "react";
 import ThemeContext from "../theme/ThemeContext.jsx";
+import UsersPage from "./UsersPage.jsx";
 
 export default function AdminPage() {
   const { toggleMode, mode } = useContext(ThemeContext);
@@ -35,6 +36,7 @@ export default function AdminPage() {
         <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
           <Routes>
             <Route path="/" element={<DashboardPage />} />
+            <Route path="/users" element={<UsersPage />} />
           </Routes>
         </Box>
       </Box>
