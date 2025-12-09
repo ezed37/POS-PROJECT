@@ -20,8 +20,6 @@ const StatCard = ({
   iconBg,
   iconColor,
 }) => {
-  const theme = useTheme();
-
   return (
     <Paper
       elevation={3}
@@ -63,7 +61,7 @@ const StatCard = ({
   );
 };
 
-const Dashboard = ({ todayData, monthlyData, chartData }) => {
+const Dashboard = ({ chartData }) => {
   const theme = useTheme();
 
   return (
