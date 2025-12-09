@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -8,8 +8,14 @@ import Switch from "@mui/material/Switch";
 import MenuIcon from "@mui/icons-material/Menu";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import AuthContext from "../auth/AuthContext";
 
 const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
+  const { user } = useContext(AuthContext);
+
+  console.log(user);
+  console.log("");
+
   return (
     <AppBar position="fixed">
       <Toolbar>
@@ -33,7 +39,9 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
           onChange={toggleMode}
           color="default"
         />
-        <Avatar alt="User Avatar" src="" sx={{ ml: 2 }} />
+        <Avatar alt="User Avatar" sx={{ ml: 2 }}>
+          {user?.username[0]?.toUpperCase() || "NN"}
+        </Avatar>
       </Toolbar>
     </AppBar>
   );

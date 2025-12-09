@@ -1,7 +1,5 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Navbar from "../components/NavBar";
 import Sidebar from "../components/SideBar";
