@@ -26,8 +26,10 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../auth/AuthContext";
+import ThemeContext from "../theme/ThemeContext";
 
 export default function LoginPage() {
+  const { toggleMode, mode } = useContext(ThemeContext);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -36,7 +38,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState("light");
 
   //Themese
   const theme = createTheme({
@@ -94,14 +95,11 @@ export default function LoginPage() {
     setOpen(false);
   };
 
-  const toggleMode = () => {
-    setMode((prev) => (prev === "light" ? "dark" : "light"));
-  };
-
   //Test
 
   return (
-    <ThemeProvider theme={theme}>
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
       <Box
         sx={{
           position: "fixed",
@@ -227,6 +225,6 @@ export default function LoginPage() {
           © {new Date().getFullYear()} Z Dev. All rights reserved.
         </Typography>
       </Container>
-    </ThemeProvider>
+    </Container>
   );
 }
