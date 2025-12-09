@@ -8,15 +8,18 @@ import Sidebar from "../components/SideBar";
 import DashboardPage from "./DashboardPage.jsx";
 import { useContext } from "react";
 import ThemeContext from "../theme/ThemeContext.jsx";
+import AuthContext from "../auth/AuthContext.jsx";
 import UsersPage from "./UsersPage.jsx";
 
 export default function AdminPage() {
+  const { user } = useContext(AuthContext);
   const { toggleMode, mode } = useContext(ThemeContext);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => {
     setSidebarOpen((prevOpen) => !prevOpen);
   };
+
   return (
     <Box
       sx={{
@@ -35,8 +38,14 @@ export default function AdminPage() {
         />
         <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
           <Routes>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/users" element={<UsersPage />} />
+            {user ? (
+              <>
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/users" element={<UsersPage />} />
+              </>
+            ) : (
+              <Route path="/*" element={<Login />} />
+            )}
           </Routes>
         </Box>
       </Box>

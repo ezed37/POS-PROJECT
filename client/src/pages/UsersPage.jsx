@@ -13,10 +13,6 @@ import {
   Card,
   CardContent,
   Divider,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogActions,
   TextField,
   IconButton,
   Chip,
@@ -26,10 +22,15 @@ import {
   Fade,
   Alert,
   Snackbar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Grid,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
+  InputLabel,
+  DialogActions,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -39,8 +40,6 @@ import {
   Person as PersonIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
-  Lock as LockIcon,
-  AccountCircle as AccountCircleIcon,
 } from "@mui/icons-material";
 import { addUser, deleteUser, getUsers, updateUser } from "../api/usersApi";
 import ThemeContext from "../theme/ThemeContext";
@@ -92,7 +91,7 @@ function UsersPage() {
   const filteredUsers = users.filter(
     (u) =>
       (u.firstName?.toLowerCase() || "").includes(search.toLowerCase()) ||
-      (u.email?.toLowerCase() || "").includes(search.toLowerCase())
+      (u.lastName?.toLowerCase() || "").includes(search.toLowerCase())
   );
 
   const handleInputChange = (e) => {
@@ -194,6 +193,313 @@ function UsersPage() {
         minHeight: "100vh",
       }}
     >
+      {/* Dialog for create a user*/}
+      <Dialog
+        open={addUserDialogOpen}
+        onClose={closeAddDialog}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Add User</DialogTitle>
+
+        <DialogContent sx={{ pt: 3 }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+              gap: 3,
+            }}
+          >
+            <TextField
+              fullWidth
+              label="Username"
+              name="username"
+              value={newUser.username}
+              onChange={handleInputChange}
+              required
+            />
+
+            <TextField
+              fullWidth
+              label="Password"
+              name="password"
+              type="password"
+              value={newUser.password}
+              onChange={handleInputChange}
+              required
+            />
+
+            <TextField
+              fullWidth
+              label="First Name"
+              name="firstName"
+              value={newUser.firstName}
+              onChange={handleInputChange}
+              required
+            />
+
+            <TextField
+              fullWidth
+              label="Last Name"
+              name="lastName"
+              value={newUser.lastName}
+              onChange={handleInputChange}
+              required
+            />
+
+            <TextField
+              select
+              required
+              fullWidth
+              label="Role"
+              name="role"
+              value={newUser.role}
+              onChange={handleInputChange}
+            >
+              <MenuItem value="cashier">Cashier</MenuItem>
+              <MenuItem value="admin">Admin</MenuItem>
+            </TextField>
+
+            <TextField
+              fullWidth
+              label="Email Address"
+              name="email"
+              type="email"
+              value={newUser.email}
+              onChange={handleInputChange}
+            />
+
+            <TextField
+              fullWidth
+              label="Phone Number"
+              name="phone"
+              value={newUser.phone}
+              onChange={handleInputChange}
+            />
+          </Box>
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, pb: 3, gap: 2 }}>
+          <Button variant="outlined" onClick={closeAddDialog}>
+            Cancel
+          </Button>
+
+          <Button variant="contained" onClick={handleAddUser}>
+            Add User
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog for update a user*/}
+      <Dialog
+        open={updateDialogOpen}
+        onClose={closeUpdateDialog}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: 600,
+            color: "#1a1a1a",
+            pb: 2,
+            borderBottom: "1px solid #e0e0e0",
+          }}
+        >
+          Update User Account
+        </DialogTitle>
+
+        <DialogContent dividers sx={{ py: 4 }}>
+          <Grid container spacing={3}>
+            {/* First Name */}
+            <Grid xs={12} sm={6}>
+              <TextField
+                autoFocus
+                required
+                fullWidth
+                label="First Name"
+                value={editUser.firstName || ""}
+                onChange={(e) =>
+                  setEditUser({ ...editUser, firstName: e.target.value })
+                }
+                variant="outlined"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                    backgroundColor: "#fafafa",
+                  },
+                }}
+              />
+            </Grid>
+
+            {/* Last Name */}
+            <Grid xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                label="Last Name"
+                value={editUser.lastName || ""}
+                onChange={(e) =>
+                  setEditUser({ ...editUser, lastName: e.target.value })
+                }
+                variant="outlined"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                    backgroundColor: "#fafafa",
+                  },
+                }}
+              />
+            </Grid>
+
+            {/* Email */}
+            <Grid xs={12}>
+              <TextField
+                required
+                fullWidth
+                label="Email Address"
+                type="email"
+                value={editUser.email || ""}
+                onChange={(e) =>
+                  setEditUser({ ...editUser, email: e.target.value })
+                }
+                variant="outlined"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                    backgroundColor: "#fafafa",
+                  },
+                }}
+              />
+            </Grid>
+
+            {/* Phone */}
+            <Grid xs={12}>
+              <TextField
+                fullWidth
+                label="Phone Number"
+                value={editUser.phone || ""}
+                onChange={(e) =>
+                  setEditUser({ ...editUser, phone: e.target.value })
+                }
+                variant="outlined"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                    backgroundColor: "#fafafa",
+                  },
+                }}
+              />
+            </Grid>
+
+            {/* Role */}
+            <Grid xs={12} sm={6}>
+              <TextField
+                select
+                required
+                fullWidth
+                label="Role"
+                value={editUser.role || ""}
+                onChange={(e) =>
+                  setEditUser({ ...editUser, role: e.target.value })
+                }
+                variant="outlined"
+                SelectProps={{ native: false }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                    backgroundColor: "#fafafa",
+                  },
+                }}
+              >
+                <MenuItem value="cashier">Cashier</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+              </TextField>
+            </Grid>
+
+            {/* New Password */}
+            <Grid xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="New Password"
+                type="password"
+                placeholder="Leave blank to keep current password"
+                value={editUser.password || ""}
+                onChange={(e) =>
+                  setEditUser({ ...editUser, password: e.target.value })
+                }
+                variant="outlined"
+                helperText="Only enter if you wish to change the password"
+                FormHelperTextProps={{ sx: { ml: 0, color: "text.secondary" } }}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                    backgroundColor: "#fafafa",
+                  },
+                }}
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+
+        <DialogActions
+          sx={{
+            px: 4,
+            pb: 4,
+            pt: 3,
+            justifyContent: "flex-end",
+            gap: 2,
+            backgroundColor: "#f9fafb",
+            borderTop: "1px solid #e0e0e0",
+          }}
+        >
+          <Button
+            onClick={closeUpdateDialog}
+            variant="outlined"
+            size="large"
+            sx={{
+              minWidth: 120,
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: 600,
+              borderColor: "#9ca3af",
+              color: "#374151",
+              "&:hover": {
+                borderColor: "#6b7280",
+                backgroundColor: "#f3f4f6",
+              },
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={handleUpdateSubmit}
+            variant="contained"
+            size="large"
+            color="primary"
+            sx={{
+              minWidth: 140,
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: 600,
+              boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
+              "&:hover": {
+                boxShadow: "0 6px 16px rgba(59, 130, 246, 0.4)",
+              },
+            }}
+          >
+            Save Changes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography
@@ -265,7 +571,7 @@ function UsersPage() {
         </Card>
       </Fade>
 
-      {/* Search and Table */}
+      {/* Search and Showing users table */}
       <Fade in timeout={700}>
         <Paper
           elevation={0}
@@ -312,7 +618,7 @@ function UsersPage() {
                       <TableCell
                         key={header}
                         sx={{
-                          fontWeight: 700,
+                          fontWeight: 1000,
                           backgroundColor: "action.hover",
                           color: "text.primary",
                         }}
