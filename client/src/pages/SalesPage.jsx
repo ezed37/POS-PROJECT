@@ -91,6 +91,15 @@ export default function SalesPage() {
     }
   };
 
+  //Find qty of product each sale
+  const totalQty = saleData.map((sale) =>
+    sale.items.reduce((sum, item) => sum + item.qty, 0)
+  );
+
+  //TEST
+
+  console.log(totalQty, saleData);
+
   return (
     <Box
       sx={{
@@ -152,7 +161,8 @@ export default function SalesPage() {
             <Grid item xs={12} size={8}>
               <Typography fontSize={14}>
                 <span style={{ fontWeight: "bold" }}>Items Qty:</span>{" "}
-                {viewSale?.items.length || "N/A"}
+                {viewSale?.items?.reduce((sum, item) => sum + item.qty, 0) ||
+                  "N/A"}
               </Typography>
             </Grid>
 
@@ -267,22 +277,20 @@ export default function SalesPage() {
 
         <TextField
           type="date"
+          variant="outlined"
+          size="small"
           onChange={(e) => handleFilterByDate(e.target.value)}
           sx={{
-            mb: 2,
-            "& .MuiInputBase-root": {
-              borderRadius: 1,
+            mb: 3,
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              backgroundColor:
+                theme.palette.mode === "dark" ? "#1a1a1a" : "#fff",
             },
-            "& input": {
-              padding: "12px",
-            },
-          }}
-          InputLabelProps={{
-            shrink: true,
           }}
         />
 
-        <Paper elevation={4} sx={{ borderRadius: 3, overflow: "hidden" }}>
+        <Paper elevation={4} sx={{ borderRadius: 2, overflow: "hidden" }}>
           <TableContainer>
             <Table stickyHeader>
               <TableHead>
@@ -301,48 +309,67 @@ export default function SalesPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredSales.map((s) => (
-                  <TableRow key={s._id} hover>
-                    <TableCell sx={{ fontSize: "0.8rem" }}>
+                {filteredSales.map((s, index) => (
+                  <TableRow
+                    key={s._id}
+                    hover
+                    sx={{
+                      backgroundColor:
+                        index % 2 === 0
+                          ? "rgba(255,255,255,0.03)"
+                          : "transparent",
+                    }}
+                  >
+                    <TableCell
+                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                    >
                       {s.reference}
                     </TableCell>
-                    <TableCell sx={{ fontSize: "0.8rem" }}>
+                    <TableCell
+                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                    >
                       {new Date(s.createdAt).toISOString().split("T")[0]}
                     </TableCell>
-                    <TableCell sx={{ fontSize: "0.8rem" }}>
-                      {viewSale?.items.length}
+                    <TableCell
+                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                    >
+                      {totalQty[index] || 0}
                     </TableCell>
-                    <TableCell sx={{ fontSize: "0.8rem" }}>
+                    <TableCell
+                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                    >
                       {s.payment_type}
                     </TableCell>
-                    <TableCell sx={{ fontSize: "0.8rem" }}>
+                    <TableCell
+                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                    >
                       {s.final_total}
                     </TableCell>
-                    <TableCell>
-                      <Box>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            gap: 1,
-                            justifyContent: "center",
+                    <TableCell
+                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 0,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <IconButton
+                          color="primary"
+                          onClick={() => {
+                            setViewSale(s);
+                            openViewDialog();
                           }}
                         >
-                          <IconButton
-                            color="primary"
-                            onClick={() => {
-                              setViewSale(s);
-                              openViewDialog();
-                            }}
-                          >
-                            <RemoveRedEyeIcon />
-                          </IconButton>
-                          <IconButton
-                            color="error"
-                            onClick={() => handleDeleteSale(s._id)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </Box>
+                          <RemoveRedEyeIcon />
+                        </IconButton>
+                        <IconButton
+                          color="error"
+                          onClick={() => handleDeleteSale(s._id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
                       </Box>
                     </TableCell>
                   </TableRow>
