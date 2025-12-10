@@ -54,6 +54,11 @@ const salesSchema = new mongoose.Schema(
       required: true,
     },
 
+    final_cost: {
+      type: Number,
+      default: 0,
+    },
+
     items: {
       type: [itemSchema],
       required: true,

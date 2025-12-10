@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, Paper, useTheme } from "@mui/material";
 import { ShoppingCart, AttachMoney, TrendingUp } from "@mui/icons-material";
 import {
@@ -11,6 +11,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { getAllSales } from "../api/salesApi";
 
 const StatCard = ({
   title,
@@ -64,6 +65,100 @@ const StatCard = ({
 const Dashboard = ({ chartData }) => {
   const theme = useTheme();
 
+  const [now, setNow] = useState(new Date());
+  const [saleData, setSaleData] = useState([]);
+
+  // Clock
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Fetch sales data
+  useEffect(() => {
+    async function fetchSalesData() {
+      try {
+        const data = await getAllSales();
+        setSaleData(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchSalesData();
+  }, []);
+
+  //Get current day/month
+  const today = new Date();
+  const currentDay = today.getDate();
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+
+  //Filter day sales
+  const todayItems = saleData.filter((items) => {
+    const date = new Date(items.createdAt);
+    return (
+      date.getDate() === currentDay &&
+      date.getMonth() === currentMonth &&
+      date.getFullYear() === currentYear
+    );
+  });
+
+  //Calculate net sales for current day
+  const totalDaySale = todayItems.reduce((sum, item) => {
+    return sum + item.final_total;
+  }, 0);
+
+  //Calculate net cost for current day
+  const totalDayCost = todayItems.reduce((sum, item) => {
+    return sum + item.final_cost;
+  }, 0);
+
+  //Calculate total month revenue
+  const totalDayRevenue = totalDaySale - totalDayCost;
+
+  //Filter month sales
+  const monthItems = saleData.filter((items) => {
+    const date = new Date(items.createdAt);
+    return (
+      date.getMonth() === currentMonth && date.getFullYear() === currentYear
+    );
+  });
+
+  //Calculate net sales for current month
+  const totalMonthSale = monthItems.reduce((sum, item) => {
+    return sum + item.final_total;
+  }, 0);
+
+  //Calculate net cost for current month
+  const totalMonthCost = monthItems.reduce((sum, item) => {
+    return sum + item.final_cost;
+  }, 0);
+
+  //Calculate total month revenue
+  const totalMonthRevenue = totalMonthSale - totalMonthCost;
+
+  //Calculate last 30 days sales and revenue
+
+  //Find last 30 days
+  const last30Days = Array.from({ length: 30 }).map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (29 - i));
+    return d;
+  });
+
+  //Find last 30 days sales
+  const last30DaysSales = last30Days.map((day) => {
+    const dateStr = day.toLocaleDateString();
+    const total = saleData
+      .filter((s) => new Date(s.createdAt).toLocaleDateString() === dateStr)
+      .reduce((acc, s) => acc + s.final_total, 0);
+    return { date: dateStr, sales: total };
+  });
+
+  //TEST
+
+  console.log(last30DaysSales);
+
   return (
     <Box sx={{ minHeight: "100vh", px: 2, bgcolor: "background.default" }}>
       <Box maxWidth="1200px" mx="auto">
@@ -80,6 +175,9 @@ const Dashboard = ({ chartData }) => {
           <Typography variant="subtitle1" color="text.secondary" mt={1}>
             Monitor your sales performance in real-time
           </Typography>
+          <Typography variant="subtitle1" mb={4} sx={{ fontWeight: "bold" }}>
+            {now.toLocaleDateString()} | {now.toLocaleTimeString()}
+          </Typography>
         </Box>
 
         {/* Stats Grid */}
@@ -88,7 +186,7 @@ const Dashboard = ({ chartData }) => {
           <Grid sx={{ xs: 12, md: 6, lg: 4, minWidth: 320 }}>
             <StatCard
               title="Today Sale Count"
-              value="Total Transaction"
+              value={todayItems?.length || 0}
               subtitle="Total transactions today"
               icon={ShoppingCart}
               iconColor={theme.palette.error.main}
@@ -99,7 +197,7 @@ const Dashboard = ({ chartData }) => {
           <Grid sx={{ xs: 12, md: 6, lg: 4, minWidth: 320 }}>
             <StatCard
               title="Today Sales"
-              value="Today Sales"
+              value={`Rs. ${totalDaySale}`}
               subtitle="Total sales amount"
               icon={AttachMoney}
               iconColor={theme.palette.error.main}
@@ -110,7 +208,7 @@ const Dashboard = ({ chartData }) => {
           <Grid sx={{ xs: 12, md: 6, lg: 4, minWidth: 320 }}>
             <StatCard
               title="Today Revenue"
-              value="Today Revenue"
+              value={`Rs. ${totalDayRevenue.toFixed(2)}`}
               subtitle="Net revenue today"
               icon={TrendingUp}
               iconColor={theme.palette.error.main}
@@ -122,7 +220,7 @@ const Dashboard = ({ chartData }) => {
           <Grid sx={{ xs: 12, md: 6, lg: 4, minWidth: 320 }}>
             <StatCard
               title="Monthly Sale Count"
-              value="Sale Count"
+              value={monthItems?.length || 0}
               subtitle="Total transactions this month"
               icon={ShoppingCart}
               iconColor={theme.palette.success.main}
@@ -133,7 +231,7 @@ const Dashboard = ({ chartData }) => {
           <Grid sx={{ xs: 12, md: 6, lg: 4, minWidth: 320 }}>
             <StatCard
               title="Monthly Sales"
-              value="Monthly Sales"
+              value={`Rs. ${totalMonthSale}`}
               subtitle="Total sales this month"
               icon={AttachMoney}
               iconColor={theme.palette.success.main}
@@ -144,7 +242,7 @@ const Dashboard = ({ chartData }) => {
           <Grid sx={{ xs: 12, md: 6, lg: 4, minWidth: 320 }}>
             <StatCard
               title="Monthly Revenue"
-              value="Monthly Revenue"
+              value={`Rs. ${totalMonthRevenue.toFixed(2)}`}
               subtitle="Net revenue this month"
               icon={TrendingUp}
               iconColor={theme.palette.success.main}
@@ -164,52 +262,26 @@ const Dashboard = ({ chartData }) => {
             mb={3}
             color="text.primary"
           >
-            Weekly Sales & Revenue Trend
+            Last 30 Day Sales
           </Typography>
           <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={chartData}>
+            <LineChart data={last30DaysSales}>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke={theme.palette.divider}
               />
-              <XAxis dataKey="day" stroke={theme.palette.text.secondary} />
-              <YAxis yAxisId="left" stroke={theme.palette.text.secondary} />
-              <YAxis
-                yAxisId="right"
-                orientation="right"
+              <XAxis
+                dataKey="date"
+                fontSize={10}
                 stroke={theme.palette.text.secondary}
               />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: theme.palette.background.paper,
-                  border: `1px solid ${theme.palette.divider}`,
-                  borderRadius: 8,
-                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                }}
-              />
-              <Legend
-                wrapperStyle={{
-                  paddingTop: 20,
-                  color: theme.palette.text.primary,
-                }}
-              />
+              <YAxis fontSize={10} stroke={theme.palette.text.secondary} />
+              <Tooltip />
               <Line
-                yAxisId="left"
                 type="monotone"
                 dataKey="sales"
                 stroke={theme.palette.error.main}
                 strokeWidth={3}
-                name="Sales ($)"
-                dot={{ fill: theme.palette.error.main, r: 5 }}
-                activeDot={{ r: 7 }}
-              />
-              <Line
-                yAxisId="right"
-                type="monotone"
-                dataKey="revenue"
-                stroke={theme.palette.success.main}
-                strokeWidth={3}
-                name="Revenue ($)"
                 dot={{ fill: theme.palette.success.main, r: 5 }}
                 activeDot={{ r: 7 }}
               />

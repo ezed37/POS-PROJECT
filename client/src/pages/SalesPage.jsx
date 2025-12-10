@@ -96,10 +96,6 @@ export default function SalesPage() {
     sale.items.reduce((sum, item) => sum + item.qty, 0)
   );
 
-  //TEST
-
-  console.log(totalQty, saleData);
-
   return (
     <Box
       sx={{
