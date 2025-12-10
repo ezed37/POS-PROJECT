@@ -11,6 +11,7 @@ import UsersPage from "./UsersPage.jsx";
 import ProductsPage from "./ProductsPage.jsx";
 import CategoriesPage from "./CategoriesPage.jsx";
 import BrandsPage from "./BrandsPage.jsx";
+import SalesPage from "./SalesPage.jsx";
 
 export default function AdminPage() {
   const { user } = useContext(AuthContext);
@@ -46,6 +47,7 @@ export default function AdminPage() {
                 <Route path="/products" element={<ProductsPage />} />
                 <Route path="/categories" element={<CategoriesPage />} />
                 <Route path="/brands" element={<BrandsPage />} />
+                <Route path="/sales" element={<SalesPage />} />
               </>
             ) : (
               <Route path="/*" element={<Login />} />

@@ -1,0 +1,326 @@
+import {
+  Alert,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Grid,
+  Paper,
+  Snackbar,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { getAllSales, deleteSale } from "../api/salesApi.js";
+import { useEffect, useState } from "react";
+
+const headStyles = {
+  fontWeight: "bold",
+  fontSize: "10px",
+  color: "#333",
+  textTransform: "uppercase",
+};
+
+export default function SalesPage() {
+  const [alerts, setAlerts] = useState(false);
+  const [saleData, setSalesData] = useState([]);
+  const [filteredSales, setFilteredSales] = useState([]);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [viewSale, setViewSale] = useState(null);
+
+  useEffect(() => {
+    async function fetchSalesData() {
+      try {
+        const data = await getAllSales();
+        setSalesData(data);
+        setFilteredSales(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchSalesData();
+  }, []);
+
+  function handleFilterByDate(selectedDate) {
+    if (!selectedDate) {
+      setFilteredSales(saleData);
+      return;
+    }
+
+    const filtered = saleData.filter((s) => {
+      const saleDate = new Date(s.createdAt).toISOString().split("T")[0];
+      return saleDate === selectedDate;
+    });
+
+    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    setFilteredSales(filtered);
+  }
+
+  const openViewDialog = async (s) => {
+    setViewDialogOpen(true);
+  };
+
+  const closeViewDialog = () => {
+    setViewDialogOpen(false);
+  };
+
+  const handleDeleteSale = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this sale?")) return;
+
+    try {
+      await deleteSale(id);
+      const updatedSales = saleData.filter((s) => s._id !== id);
+      setSalesData(updatedSales);
+      setFilteredSales(updatedSales);
+    } catch (err) {
+      console.error("Error deleting sale:", err);
+    }
+  };
+
+  return (
+    <>
+      <Dialog
+        open={viewDialogOpen}
+        onClose={closeViewDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle fontWeight={"bold"}>Invoice</DialogTitle>
+
+        {viewSale?.items?.length > 0 && (
+          <Grid container spacing={1} marginBottom={2} ml={2}>
+            <Grid item xs={12} size={12}>
+              <Typography fontSize={14}>
+                <span style={{ fontWeight: "bold" }}>Invoice No.</span>{" "}
+                {viewSale?.reference}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={6} size={8}>
+              <Typography fontSize={14}>
+                <span style={{ fontWeight: "bold" }}>Date :</span>{" "}
+                {new Date(viewSale.createdAt).toLocaleDateString("en-GB", {
+                  timeZone: "Asia/Colombo",
+                })}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={6} size={4}>
+              <Typography fontSize={14}>
+                <span style={{ fontWeight: "bold" }}>Time :</span>{" "}
+                {new Date(viewSale.createdAt).toLocaleTimeString("en-GB", {
+                  timeZone: "Asia/Colombo",
+                })}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} size={8}>
+              <Typography fontSize={14}>
+                <span style={{ fontWeight: "bold" }}>Cust. Name:</span>{" "}
+                {viewSale?.customer_name || "N/A"}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} size={4}>
+              <Typography fontSize={14}>
+                <span style={{ fontWeight: "bold" }}>User Name:</span>{" "}
+                {viewSale?.user_name || "N/A"}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} size={8}>
+              <Typography fontSize={14}>
+                <span style={{ fontWeight: "bold" }}>Items Qty:</span>{" "}
+                {viewSale?.items.length || "N/A"}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} size={4}>
+              <Typography fontSize={14}>
+                <span style={{ fontWeight: "bold" }}>Payment Method:</span>{" "}
+                {viewSale?.payment_type || "N/A"}
+              </Typography>
+            </Grid>
+          </Grid>
+        )}
+
+        <DialogContent dividers>
+          <Divider sx={{ marginBottom: 2 }} />
+          {/* Items Table */}
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <b>Item</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Qty</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Unit Price</b>
+                </TableCell>
+                <TableCell align="center">
+                  <b>Total</b>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {viewSale?.items?.length > 0 &&
+                viewSale.items.map((item, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{item.product_name}</TableCell>
+                    <TableCell align="center">{item.qty}</TableCell>
+                    <TableCell align="center">{item.selling_price}</TableCell>
+                    <TableCell align="center">
+                      {item.qty * item.selling_price}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+          <Divider sx={{ marginTop: 2, marginBottom: 2 }} />
+
+          {viewSale && (
+            <Table size="small" sx={{ mt: 2, borderCollapse: "collapse" }}>
+              <TableBody>
+                {/* Sub Total */}
+                <TableRow sx={{ border: 0 }}>
+                  <TableCell sx={{ border: 0 }} />
+                  <TableCell sx={{ border: 0 }}>
+                    <Typography fontWeight="bold">Total (Rs.)</Typography>
+                  </TableCell>
+                  <TableCell align="right" sx={{ border: 0 }}>
+                    <Typography>{viewSale.sub_total || 0}</Typography>
+                  </TableCell>
+                  <TableCell sx={{ border: 0 }} />
+                </TableRow>
+
+                {/* Discount */}
+                <TableRow sx={{ border: 0 }}>
+                  <TableCell sx={{ border: 0 }} />
+                  <TableCell sx={{ border: 0 }}>
+                    <Typography>Discount (%)</Typography>
+                  </TableCell>
+                  <TableCell align="right" sx={{ border: 0 }}>
+                    <Typography>{viewSale.discount || 0}</Typography>
+                  </TableCell>
+                  <TableCell sx={{ border: 0 }} />
+                </TableRow>
+
+                {/* Final Total */}
+                <TableRow sx={{ border: 0 }}>
+                  <TableCell sx={{ border: 0 }} />
+                  <TableCell sx={{ border: 0 }}>
+                    <Typography fontWeight="bold">Final Total (Rs.)</Typography>
+                  </TableCell>
+                  <TableCell align="right" sx={{ border: 0 }}>
+                    <Typography fontWeight="bold">
+                      {viewSale.final_total || 0}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ border: 0 }} />
+                </TableRow>
+              </TableBody>
+            </Table>
+          )}
+        </DialogContent>
+
+        <DialogActions>
+          <Button variant="contained" onClick={closeViewDialog}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Typography variant="h5" marginBottom={3} fontWeight="bold">
+        Sales Management
+      </Typography>
+
+      <input
+        type="date"
+        onChange={(e) => handleFilterByDate(e.target.value)}
+        style={{ marginBottom: "16px", padding: "6px" }}
+      />
+
+      <Paper elevation={3} sx={{ padding: 2, borderRadius: 3 }}>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "#f7f7f7" }}>
+                <TableCell sx={headStyles}>Invoice No.</TableCell>
+                <TableCell sx={headStyles}>Date</TableCell>
+                <TableCell sx={headStyles}>Sold Item Count</TableCell>
+                <TableCell sx={headStyles}>Payment Type</TableCell>
+                <TableCell sx={headStyles}>Final Total</TableCell>
+                <TableCell sx={headStyles} />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredSales.map((s) => (
+                <TableRow key={s._id}>
+                  <TableCell>{s.reference}</TableCell>
+                  <TableCell>
+                    {new Date(s.createdAt).toISOString().split("T")[0]}
+                  </TableCell>
+                  <TableCell align="center">{viewSale?.items.length}</TableCell>
+                  <TableCell align="center">{s.payment_type}</TableCell>
+                  <TableCell align="center">{s.final_total}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      size="small"
+                      sx={{ m: 0.5, minWidth: "auto" }}
+                      onClick={() => {
+                        setViewSale(s);
+                        openViewDialog();
+                      }}
+                    >
+                      <RemoveRedEyeIcon sx={{ fontSize: 12 }} />
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      size="small"
+                      sx={{ m: 0.5, minWidth: "auto" }}
+                      onClick={() => handleDeleteSale(s._id)}
+                    >
+                      <DeleteIcon sx={{ fontSize: 12 }} />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+
+      {/* Snackbar for Alert */}
+      <Snackbar
+        open={alerts.open}
+        autoHideDuration={4000}
+        onClose={() => setAlerts({ ...alerts, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setAlerts({ ...alerts, open: false })}
+          severity={alerts.type}
+          variant="filled"
+          sx={{ borderRadius: 2 }}
+        >
+          {alerts.msg}
+        </Alert>
+      </Snackbar>
+    </>
+  );
+}
