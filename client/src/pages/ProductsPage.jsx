@@ -38,6 +38,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import InventoryIcon from "@mui/icons-material/Inventory";
 
 function ProductsPage() {
   const theme = useTheme();
@@ -544,7 +545,14 @@ function ProductsPage() {
 
       {/* Main Page */}
       <Box sx={{ p: { xs: 2, md: 4 } }}>
-        <Typography variant="h4" fontWeight={700} gutterBottom>
+        <Typography
+          variant="h4"
+          fontWeight="700"
+          gutterBottom
+          color="primary"
+          sx={{ mb: 1, display: "flex", alignItems: "center", gap: 1 }}
+        >
+          <InventoryIcon sx={{ fontSize: 36 }} />
           Product Management
         </Typography>
 
