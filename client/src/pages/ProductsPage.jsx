@@ -123,11 +123,6 @@ function ProductsPage() {
     setUpdateDialogOpen(true);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewProduct((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleAddProduct = async () => {
     if (
       !newProduct.product_name ||
@@ -172,12 +167,17 @@ function ProductsPage() {
     }
   };
 
-  const handleUpdateProduct = async () => {
+  const handleUpdateSubmit = async () => {
     try {
       await updateProduct(editProduct._id, editProduct);
       setProducts((prev) =>
         prev.map((p) => (p._id === editProduct._id ? editProduct : p))
       );
+      setAlerts({
+        open: true,
+        type: "success",
+        msg: "Product Updated successfully!",
+      });
       setUpdateDialogOpen(false);
     } catch (err) {
       console.error(err);
@@ -199,31 +199,6 @@ function ProductsPage() {
   useEffect(() => {
     getAllProducts().then((res) => setProducts(res.data));
   }, []);
-
-  const FormTextField = ({
-    label,
-    name,
-    value,
-    onChange,
-    select,
-    children,
-    ...props
-  }) => (
-    <TextField
-      label={label}
-      name={name}
-      value={value}
-      onChange={onChange}
-      select={select}
-      fullWidth
-      variant="outlined"
-      size="small"
-      sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-      {...props}
-    >
-      {children}
-    </TextField>
-  );
 
   return (
     <>
@@ -373,6 +348,196 @@ function ProductsPage() {
           </Button>
           <Button onClick={handleAddProduct} variant="contained">
             Add Product
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Update product Dialog */}
+      <Dialog
+        open={updateDialogOpen}
+        onClose={() => setUpdateDialogOpen(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle sx={{ pb: 1, fontWeight: 600 }}>
+          Update Product
+        </DialogTitle>
+
+        <DialogContent dividers>
+          <Grid container spacing={2} sx={{ pt: 1 }}>
+            <Grid item xs={12} sm={6} mt={2}>
+              <TextField
+                fullWidth
+                label="Product Name"
+                value={editProduct.product_name}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    product_name: e.target.value,
+                  })
+                }
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6} mt={2}>
+              <TextField
+                fullWidth
+                label="Barcode"
+                value={editProduct.barcode}
+                onChange={(e) =>
+                  setEditProduct({ ...editProduct, barcode: e.target.value })
+                }
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                select
+                fullWidth
+                sx={{ minWidth: 230 }}
+                label="Regular Item"
+                name="regular_item"
+                value={editProduct.regular_item}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    regular_item: e.target.value,
+                  })
+                }
+              >
+                <MenuItem value={true}>True</MenuItem>
+                <MenuItem value={false}>False</MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                select
+                fullWidth
+                sx={{ minWidth: 230 }}
+                label="Category Name"
+                value={editProduct.category_id}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    category_id: e.target.value,
+                  })
+                }
+              >
+                {categories.map((ctg) => (
+                  <MenuItem key={ctg.category_id} value={ctg.category_id}>
+                    {ctg.category_name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                select
+                fullWidth
+                sx={{ minWidth: 230 }}
+                label="Brand Name"
+                value={editProduct.brand_id}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    brand_id: e.target.value,
+                  })
+                }
+              >
+                {brands.map((br) => (
+                  <MenuItem key={br.brand_id} value={br.brand_id}>
+                    {br.brand_name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                select
+                fullWidth
+                sx={{ minWidth: 230 }}
+                label="Unit"
+                value={editProduct.unit}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    unit: e.target.value,
+                  })
+                }
+              >
+                <MenuItem value="pkt">Packet</MenuItem>
+                <MenuItem value="weight">Weight</MenuItem>
+                <MenuItem value="length">Length</MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Stock Qty"
+                value={editProduct.stock_qty}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    stock_qty: e.target.value,
+                  })
+                }
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Cost Price (Rs.) per Unit"
+                value={editProduct.cost_price}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    cost_price: e.target.value,
+                  })
+                }
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Actual Price (Rs.) per Unit"
+                value={editProduct.actual_price}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    actual_price: e.target.value,
+                  })
+                }
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Selling Price (Rs.) per Unit"
+                value={editProduct.selling_price}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    selling_price: e.target.value,
+                  })
+                }
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+
+        <DialogActions sx={{ padding: 2 }}>
+          <Button variant="outlined" onClick={() => setUpdateDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button variant="contained" onClick={handleUpdateSubmit}>
+            Submit
           </Button>
         </DialogActions>
       </Dialog>
