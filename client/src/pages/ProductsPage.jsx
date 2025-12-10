@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -13,6 +14,7 @@ import {
   InputAdornment,
   MenuItem,
   Paper,
+  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -39,6 +41,11 @@ import EditIcon from "@mui/icons-material/Edit";
 
 function ProductsPage() {
   const theme = useTheme();
+  const [alerts, setAlerts] = useState({
+    open: false,
+    type: "success",
+    msg: "",
+  });
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -131,13 +138,22 @@ function ProductsPage() {
       newProduct.actual_price <= 0 ||
       newProduct.selling_price <= 0
     ) {
-      alert("Please fill all required fields with valid values.");
+      setAlerts({
+        open: true,
+        type: "error",
+        msg: "Please fill all required fields with valid values.",
+      });
       return;
     }
 
     try {
       const res = await addProduct(newProduct);
       setProducts((prev) => [...prev, res.data]);
+      setAlerts({
+        open: true,
+        type: "success",
+        msg: "Product added successfully!",
+      });
       setAddDialogOpen(false);
       setNewProduct({
         product_id: "",
@@ -173,6 +189,11 @@ function ProductsPage() {
     if (!window.confirm("Are you sure you want to delete this product?"))
       return;
     await deleteProduct(id);
+    setAlerts({
+      open: true,
+      type: "success",
+      msg: "Product deleted successfully!",
+    });
     setProducts((prev) => prev.filter((p) => p._id !== id));
   };
 
@@ -497,6 +518,23 @@ function ProductsPage() {
           </TableContainer>
         </Paper>
       </Box>
+
+      {/* Snackbar for Alert */}
+      <Snackbar
+        open={alerts.open}
+        autoHideDuration={4000}
+        onClose={() => setAlerts({ ...alerts, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={() => setAlerts({ ...alerts, open: false })}
+          severity={alerts.type}
+          variant="filled"
+          sx={{ borderRadius: 2 }}
+        >
+          {alerts.msg}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
