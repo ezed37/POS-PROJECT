@@ -23,17 +23,17 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import CategoryIcon from "@mui/icons-material/Category";
-import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import BrandingWatermarkIcon from "@mui/icons-material/BrandingWatermark";
 import React, { useContext, useEffect, useState } from "react";
 import {
-  addCategory,
-  deleteCategory,
-  getAllCategory,
-  updateCategory,
-} from "../api/categoriesApi";
+  addBrand,
+  deleteBrand,
+  getAllBrand,
+  updateBrand,
+} from "../api/brandsApi";
 import ThemeContext from "../theme/ThemeContext";
 
 const headStyles = {
@@ -41,9 +41,9 @@ const headStyles = {
   textTransform: "uppercase",
 };
 
-export default function CategoriesPage() {
-  const { mode } = useContext(ThemeContext);
+export default function BrandsPage() {
   const theme = useTheme();
+  const { mode } = useContext(ThemeContext);
 
   //States
   const [alerts, setAlerts] = useState({
@@ -52,37 +52,36 @@ export default function CategoriesPage() {
     msg: "",
   });
 
-  const [updateCategoryDialogOpen, setUpdateCategoryDialogOpen] =
-    useState(false);
-  const [addCategoryDialogOpen, setAddCategoryDialogOpen] = useState(false);
-  const [category, setCategory] = useState([]);
-  const [editCategory, setEditCategory] = useState({
-    category_id: "",
-    category_name: "",
+  const [updateBrandDialogOpen, setupdateBrandDialogOpen] = useState(false);
+  const [addBrandDialogOpen, setAddBrandDialogOpen] = useState(false);
+  const [brand, setBrand] = useState([]);
+  const [editBrand, seteditBrand] = useState({
+    brand_id: "",
+    brand_name: "",
     description: "",
   });
-  const [newCategory, setNewCategory] = useState({
-    category_id: "",
-    category_name: "",
+  const [newBrand, setnewBrand] = useState({
+    brand_id: "",
+    brand_name: "",
     description: "",
   });
 
-  //Add category
-  const openAddCategoryDialog = () => {
-    setAddCategoryDialogOpen(true);
+  //Add brand
+  const openAddbrandDialog = () => {
+    setAddBrandDialogOpen(true);
   };
 
-  const closeAddCategoryDialog = () => {
-    setAddCategoryDialogOpen(false);
+  const closeAddbrandDialog = () => {
+    setAddBrandDialogOpen(false);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewCategory((prev) => ({ ...prev, [name]: value }));
+    setnewBrand((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddCategory = async () => {
-    if (!newCategory.category_name || !newCategory.description) {
+  const handleAddbrand = async () => {
+    if (!newBrand.brand_name || !newBrand.description) {
       setAlerts({
         open: true,
         type: "error",
@@ -91,74 +90,73 @@ export default function CategoriesPage() {
       return;
     }
     try {
-      const res = await addCategory(newCategory);
-      setCategory((prev) => [...prev, res.data]);
+      const res = await addBrand(newBrand);
+      setBrand((prev) => [...prev, res.data]);
       setAlerts({
         open: true,
         type: "success",
-        msg: "Category Added Successfull!",
+        msg: "Brand Added Successfull!",
       });
-      setNewCategory({
-        category_id: "",
-        category_name: "",
+      setnewBrand({
+        brand_id: "",
+        brand_name: "",
         description: "",
       });
-      setAddCategoryDialogOpen(false);
+      setAddBrandDialogOpen(false);
     } catch (error) {
       console.error(error);
     }
   };
 
-  //Update category
-  const openUpdateCategoryDialog = (category) => {
-    setEditCategory(category);
-    setUpdateCategoryDialogOpen(true);
+  //Update brand
+  const openUpdatebrandDialog = (brand) => {
+    seteditBrand(brand);
+    setupdateBrandDialogOpen(true);
   };
 
-  const closeUpdateCategoryDialog = () => {
-    setUpdateCategoryDialogOpen(false);
+  const closeUpdatebrandDialog = () => {
+    setupdateBrandDialogOpen(false);
   };
 
-  const handleUpdateCategorySubmit = async () => {
+  const handleUpdatebrandSubmit = async () => {
     try {
-      await updateCategory(editCategory._id, editCategory);
-      setCategory((prev) =>
-        prev.map((p) => (p._id === editCategory._id ? editCategory : p))
+      await updateBrand(editBrand._id, editBrand);
+      setBrand((prev) =>
+        prev.map((p) => (p._id === editBrand._id ? editBrand : p))
       );
       setAlerts({
         open: true,
         type: "success",
-        msg: "Category Updated Successfull!",
+        msg: "Brand Updated Successfull!",
       });
-      closeUpdateCategoryDialog();
+      closeUpdatebrandDialog();
     } catch (error) {
       console.error(error);
     }
   };
 
-  //Delete a category
-  const handleDeleteCategory = async (categoryId) => {
-    if (!window.confirm("Are you sure you want to delete this category?"))
-      return;
+  //Delete a brand
+  const handleDeletebrand = async (brandId) => {
+    if (!window.confirm("Are you sure you want to delete this brand?")) return;
 
     try {
-      await deleteCategory(categoryId);
+      await deleteBrand(brandId);
       setAlerts({
         open: true,
         type: "success",
-        msg: "Category Deleted Successfull!",
+        msg: "Brand Deleted Successfull!",
       });
-      setCategory((prev) => prev.filter((p) => p._id !== categoryId));
+      setBrand((prev) => prev.filter((p) => p._id !== brandId));
     } catch (err) {
-      console.error("Error deleting category:", err);
+      console.error("Error deleting brand:", err);
     }
   };
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getAllCategory();
-        setCategory(data.data);
+        const data = await getAllBrand();
+        setBrand(data.data);
       } catch (error) {
         console.error(error);
       }
@@ -168,26 +166,26 @@ export default function CategoriesPage() {
 
   return (
     <>
-      {/*Update category dialog */}
+      {/* Update brand */}
       <Dialog
-        open={updateCategoryDialogOpen}
-        onClose={closeUpdateCategoryDialog}
+        open={updateBrandDialogOpen}
+        onClose={closeUpdatebrandDialog}
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Update Category</DialogTitle>
+        <DialogTitle>Update Brand</DialogTitle>
 
         <DialogContent sx={{ paddingTop: 2 }}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} mt={2}>
               <TextField
                 fullWidth
-                label="Category Name"
-                value={editCategory.category_name}
+                label="Brand Name"
+                value={editBrand.brand_name}
                 onChange={(e) =>
-                  setEditCategory({
-                    ...editCategory,
-                    category_name: e.target.value,
+                  seteditBrand({
+                    ...editBrand,
+                    brand_name: e.target.value,
                   })
                 }
               />
@@ -197,10 +195,10 @@ export default function CategoriesPage() {
               <TextField
                 fullWidth
                 label="Description"
-                value={editCategory.description}
+                value={editBrand.description}
                 onChange={(e) =>
-                  setEditCategory({
-                    ...editCategory,
+                  seteditBrand({
+                    ...editBrand,
                     description: e.target.value,
                   })
                 }
@@ -210,32 +208,32 @@ export default function CategoriesPage() {
         </DialogContent>
 
         <DialogActions sx={{ padding: 2 }}>
-          <Button variant="outlined" onClick={closeUpdateCategoryDialog}>
+          <Button variant="outlined" onClick={closeUpdatebrandDialog}>
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleUpdateCategorySubmit}>
+          <Button variant="contained" onClick={handleUpdatebrandSubmit}>
             Submit
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/*Add a category dialog */}
+      {/* Add new brand */}
       <Dialog
-        open={addCategoryDialogOpen}
-        onClose={closeAddCategoryDialog}
+        open={addBrandDialogOpen}
+        onClose={closeAddbrandDialog}
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Add Category</DialogTitle>
+        <DialogTitle>Add Brand</DialogTitle>
         <DialogContent sx={{ paddingTop: 2 }}>
           <Grid container spacing={2}>
             <Grid mt={3}>
               <TextField
                 fullWidth
                 sx={{ maxWidth: 220 }}
-                label="Category Name"
-                name="category_name"
-                value={newCategory.category_name}
+                label="Brand Name"
+                name="brand_name"
+                value={newBrand.brand_name}
                 onChange={handleInputChange}
               />
             </Grid>
@@ -246,7 +244,7 @@ export default function CategoriesPage() {
                 sx={{ maxWidth: 220 }}
                 label="Description"
                 name="description"
-                value={newCategory.description}
+                value={newBrand.description}
                 onChange={handleInputChange}
               />
             </Grid>
@@ -254,10 +252,10 @@ export default function CategoriesPage() {
         </DialogContent>
 
         <DialogActions sx={{ padding: 2 }}>
-          <Button variant="outlined" onClick={closeAddCategoryDialog}>
+          <Button variant="outlined" onClick={closeAddbrandDialog}>
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleAddCategory}>
+          <Button variant="contained" onClick={handleAddbrand}>
             Add
           </Button>
         </DialogActions>
@@ -271,8 +269,8 @@ export default function CategoriesPage() {
           color="primary"
           sx={{ mb: 1, display: "flex", alignItems: "center", gap: 1 }}
         >
-          <CategoryIcon sx={{ fontSize: 36 }} />
-          Category Management
+          <BrandingWatermarkIcon sx={{ fontSize: 36 }} />
+          Brand Management
         </Typography>
 
         <Fade in timeout={500}>
@@ -298,16 +296,16 @@ export default function CategoriesPage() {
             >
               <Box>
                 <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>
-                  Add New Category
+                  Add New Brand
                 </Typography>
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
-                  Create categories of the products
+                  Create Brands of the products
                 </Typography>
               </Box>
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
-                onClick={openAddCategoryDialog}
+                onClick={openAddbrandDialog}
                 sx={{
                   backgroundColor: "common.white",
                   color: "primary.main",
@@ -323,7 +321,7 @@ export default function CategoriesPage() {
                   transition: "all 0.3s",
                 }}
               >
-                Create New Category
+                Create New Brand
               </Button>
             </CardContent>
           </Card>
@@ -339,23 +337,23 @@ export default function CategoriesPage() {
                       theme.palette.mode === "dark" ? "#2d2d2d" : "#f5f5f5",
                   }}
                 >
-                  <TableCell sx={headStyles}>Category ID</TableCell>
-                  <TableCell sx={headStyles}>Category Name</TableCell>
+                  <TableCell sx={headStyles}>Brand ID</TableCell>
+                  <TableCell sx={headStyles}>Brand Name</TableCell>
                   <TableCell sx={headStyles}>Description</TableCell>
                   <TableCell sx={headStyles}>Action</TableCell>
                 </TableRow>
               </TableHead>
 
               <TableBody>
-                {category.map((category) => (
-                  <TableRow key={category._id} hover>
+                {brand.map((brand) => (
+                  <TableRow key={brand._id} hover>
                     <TableCell sx={{ fontSize: "0.8rem" }}>
-                      {category.category_id}
+                      {brand.brand_id}
                     </TableCell>
                     <TableCell sx={{ fontSize: "0.8rem" }}>
-                      {category.category_name}
+                      {brand.brand_name}
                     </TableCell>
-                    <TableCell>{category.description}</TableCell>
+                    <TableCell>{brand.description}</TableCell>
                     <TableCell>
                       <Box
                         sx={{
@@ -366,13 +364,13 @@ export default function CategoriesPage() {
                       >
                         <IconButton
                           color="primary"
-                          onClick={() => openUpdateCategoryDialog(category)}
+                          onClick={() => openUpdatebrandDialog(brand)}
                         >
                           <EditIcon />
                         </IconButton>
                         <IconButton
                           color="error"
-                          onClick={() => handleDeleteCategory(category._id)}
+                          onClick={() => handleDeletebrand(brand._id)}
                         >
                           <DeleteIcon />
                         </IconButton>

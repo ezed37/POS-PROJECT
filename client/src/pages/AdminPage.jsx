@@ -10,6 +10,7 @@ import AuthContext from "../auth/AuthContext.jsx";
 import UsersPage from "./UsersPage.jsx";
 import ProductsPage from "./ProductsPage.jsx";
 import CategoriesPage from "./CategoriesPage.jsx";
+import BrandsPage from "./BrandsPage.jsx";
 
 export default function AdminPage() {
   const { user } = useContext(AuthContext);
@@ -44,6 +45,7 @@ export default function AdminPage() {
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/products" element={<ProductsPage />} />
                 <Route path="/categories" element={<CategoriesPage />} />
+                <Route path="/brands" element={<BrandsPage />} />
               </>
             ) : (
               <Route path="/*" element={<Login />} />
