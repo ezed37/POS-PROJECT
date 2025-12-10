@@ -13,9 +13,6 @@ import AuthContext from "../auth/AuthContext";
 const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
   const { user } = useContext(AuthContext);
 
-  console.log(user);
-  console.log("");
-
   return (
     <AppBar position="fixed">
       <Toolbar>

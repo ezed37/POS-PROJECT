@@ -2,7 +2,10 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./config/db.js";
-import usersRoutes from "./routes/usersRoutes.js";
+import usersRoute from "./routes/usersRoute.js";
+import productsRoute from "./routes/productsRoute.js";
+import brandsRoute from "./routes/brandsRoute.js";
+import categoriesRoute from "./routes/categoriesRoute.js";
 
 dotenv.config();
 
@@ -13,7 +16,10 @@ app.use(cors());
 app.use(express.json());
 
 //Routes
-app.use("/api/users", usersRoutes);
+app.use("/api/users", usersRoute);
+app.use("/api/products", productsRoute);
+app.use("/api/brands", brandsRoute);
+app.use("/api/categories", categoriesRoute);
 
 //Root route
 app.get("/", (req, res) => {

@@ -8,6 +8,7 @@ import { useContext } from "react";
 import ThemeContext from "../theme/ThemeContext.jsx";
 import AuthContext from "../auth/AuthContext.jsx";
 import UsersPage from "./UsersPage.jsx";
+import ProductsPage from "./ProductsPage.jsx";
 
 export default function AdminPage() {
   const { user } = useContext(AuthContext);
@@ -40,6 +41,7 @@ export default function AdminPage() {
               <>
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/users" element={<UsersPage />} />
+                <Route path="/products" element={<ProductsPage />} />
               </>
             ) : (
               <Route path="/*" element={<Login />} />
