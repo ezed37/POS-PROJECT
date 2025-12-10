@@ -1,5 +1,6 @@
 import {
   Alert,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -7,6 +8,7 @@ import {
   DialogTitle,
   Divider,
   Grid,
+  IconButton,
   Paper,
   Snackbar,
   Table,
@@ -15,21 +17,24 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import { getAllSales, deleteSale } from "../api/salesApi.js";
 import { useEffect, useState } from "react";
 
 const headStyles = {
-  fontWeight: "bold",
-  fontSize: "10px",
-  color: "#333",
+  fontWeight: "600",
   textTransform: "uppercase",
 };
 
 export default function SalesPage() {
+  const theme = useTheme();
+
   const [alerts, setAlerts] = useState(false);
   const [saleData, setSalesData] = useState([]);
   const [filteredSales, setFilteredSales] = useState([]);
@@ -87,7 +92,14 @@ export default function SalesPage() {
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        p: { xs: 2, sm: 3, md: 4 },
+        backgroundColor: "background.default",
+        minHeight: "100vh",
+      }}
+    >
+      {/* View sale details dialog */}
       <Dialog
         open={viewDialogOpen}
         onClose={closeViewDialog}
@@ -242,68 +254,104 @@ export default function SalesPage() {
         </DialogActions>
       </Dialog>
 
-      <Typography variant="h5" marginBottom={3} fontWeight="bold">
-        Sales Management
-      </Typography>
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h4"
+          fontWeight="700"
+          color="primary"
+          sx={{ mb: 1, display: "flex", alignItems: "center", gap: 1 }}
+        >
+          <ShoppingCartCheckoutIcon sx={{ fontSize: 36 }} />
+          Sales Management
+        </Typography>
 
-      <input
-        type="date"
-        onChange={(e) => handleFilterByDate(e.target.value)}
-        style={{ marginBottom: "16px", padding: "6px" }}
-      />
+        <TextField
+          type="date"
+          onChange={(e) => handleFilterByDate(e.target.value)}
+          sx={{
+            mb: 2,
+            "& .MuiInputBase-root": {
+              borderRadius: 1,
+            },
+            "& input": {
+              padding: "12px",
+            },
+          }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
 
-      <Paper elevation={3} sx={{ padding: 2, borderRadius: 3 }}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ backgroundColor: "#f7f7f7" }}>
-                <TableCell sx={headStyles}>Invoice No.</TableCell>
-                <TableCell sx={headStyles}>Date</TableCell>
-                <TableCell sx={headStyles}>Sold Item Count</TableCell>
-                <TableCell sx={headStyles}>Payment Type</TableCell>
-                <TableCell sx={headStyles}>Final Total</TableCell>
-                <TableCell sx={headStyles} />
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredSales.map((s) => (
-                <TableRow key={s._id}>
-                  <TableCell>{s.reference}</TableCell>
-                  <TableCell>
-                    {new Date(s.createdAt).toISOString().split("T")[0]}
-                  </TableCell>
-                  <TableCell align="center">{viewSale?.items.length}</TableCell>
-                  <TableCell align="center">{s.payment_type}</TableCell>
-                  <TableCell align="center">{s.final_total}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      color="error"
-                      size="small"
-                      sx={{ m: 0.5, minWidth: "auto" }}
-                      onClick={() => {
-                        setViewSale(s);
-                        openViewDialog();
-                      }}
-                    >
-                      <RemoveRedEyeIcon sx={{ fontSize: 12 }} />
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="warning"
-                      size="small"
-                      sx={{ m: 0.5, minWidth: "auto" }}
-                      onClick={() => handleDeleteSale(s._id)}
-                    >
-                      <DeleteIcon sx={{ fontSize: 12 }} />
-                    </Button>
-                  </TableCell>
+        <Paper elevation={4} sx={{ borderRadius: 3, overflow: "hidden" }}>
+          <TableContainer>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow
+                  sx={{
+                    backgroundColor:
+                      theme.palette.mode === "dark" ? "#2d2d2d" : "#f5f5f5",
+                  }}
+                >
+                  <TableCell sx={headStyles}>Invoice No.</TableCell>
+                  <TableCell sx={headStyles}>Date</TableCell>
+                  <TableCell sx={headStyles}>Sold Item Count</TableCell>
+                  <TableCell sx={headStyles}>Payment Type</TableCell>
+                  <TableCell sx={headStyles}>Final Total</TableCell>
+                  <TableCell sx={headStyles}>Action</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
+              </TableHead>
+              <TableBody>
+                {filteredSales.map((s) => (
+                  <TableRow key={s._id} hover>
+                    <TableCell sx={{ fontSize: "0.8rem" }}>
+                      {s.reference}
+                    </TableCell>
+                    <TableCell sx={{ fontSize: "0.8rem" }}>
+                      {new Date(s.createdAt).toISOString().split("T")[0]}
+                    </TableCell>
+                    <TableCell sx={{ fontSize: "0.8rem" }}>
+                      {viewSale?.items.length}
+                    </TableCell>
+                    <TableCell sx={{ fontSize: "0.8rem" }}>
+                      {s.payment_type}
+                    </TableCell>
+                    <TableCell sx={{ fontSize: "0.8rem" }}>
+                      {s.final_total}
+                    </TableCell>
+                    <TableCell>
+                      <Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 1,
+                            justifyContent: "center",
+                          }}
+                        >
+                          <IconButton
+                            color="primary"
+                            onClick={() => {
+                              setViewSale(s);
+                              openViewDialog();
+                            }}
+                          >
+                            <RemoveRedEyeIcon />
+                          </IconButton>
+                          <IconButton
+                            color="error"
+                            onClick={() => handleDeleteSale(s._id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Box>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      </Box>
 
       {/* Snackbar for Alert */}
       <Snackbar
@@ -321,6 +369,6 @@ export default function SalesPage() {
           {alerts.msg}
         </Alert>
       </Snackbar>
-    </>
+    </Box>
   );
 }
