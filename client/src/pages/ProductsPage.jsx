@@ -47,6 +47,8 @@ function ProductsPage() {
     msg: "",
   });
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [search, setSearch] = useState("");
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
@@ -64,11 +66,8 @@ function ProductsPage() {
     actual_price: 0,
     selling_price: 0,
   });
-
   const [editProduct, setEditProduct] = useState({});
 
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
   const [sortConfig, setSortConfig] = useState({
     field: "product_id",
     order: "asc",
