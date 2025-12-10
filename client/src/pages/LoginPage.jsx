@@ -95,8 +95,6 @@ export default function LoginPage() {
     setOpen(false);
   };
 
-  //Test
-
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />

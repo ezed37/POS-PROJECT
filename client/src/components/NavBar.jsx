@@ -38,15 +38,17 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
     <>
       <AppBar position="fixed">
         <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={toggleSidebar}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
+          {user && user.role === "admin" && (
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={toggleSidebar}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             POS SYSTEM | ADMIN PANEL
           </Typography>

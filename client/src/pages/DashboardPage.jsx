@@ -155,10 +155,6 @@ const Dashboard = ({ chartData }) => {
     return { date: dateStr, sales: total };
   });
 
-  //TEST
-
-  console.log(last30DaysSales);
-
   return (
     <Box sx={{ minHeight: "100vh", px: 2, bgcolor: "background.default" }}>
       <Box maxWidth="1200px" mx="auto">
