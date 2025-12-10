@@ -50,7 +50,8 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
             </IconButton>
           )}
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            POS SYSTEM | ADMIN PANEL
+            POS SYSTEM |{" "}
+            {user.role === "admin" ? "ADMIN PANEL" : "Cashier Panel"}
           </Typography>
           <IconButton color="inherit" onClick={toggleMode}>
             {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
