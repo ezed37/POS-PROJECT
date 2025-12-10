@@ -69,7 +69,12 @@ const Dashboard = ({ chartData }) => {
       <Box maxWidth="1200px" mx="auto">
         {/* Header */}
         <Box mb={8}>
-          <Typography variant="h3" fontWeight="bold" color="text.primary">
+          <Typography
+            variant="h3"
+            fontWeight="700"
+            color="primary"
+            sx={{ mb: 1, display: "flex", alignItems: "center", gap: 1 }}
+          >
             Dashboard
           </Typography>
           <Typography variant="subtitle1" color="text.secondary" mt={1}>
