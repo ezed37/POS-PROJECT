@@ -13,13 +13,16 @@ import CategoriesPage from "./CategoriesPage.jsx";
 import BrandsPage from "./BrandsPage.jsx";
 import SalesPage from "./SalesPage.jsx";
 
+const drawerWidth = 240;
+const collapsedWidth = 70;
+
 export default function AdminPage() {
   const { user } = useContext(AuthContext);
   const { toggleMode, mode } = useContext(ThemeContext);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => {
-    setSidebarOpen((prevOpen) => !prevOpen);
+    setSidebarOpen((prev) => !prev);
   };
 
   return (
@@ -32,7 +35,13 @@ export default function AdminPage() {
       }}
     >
       <Sidebar open={sidebarOpen} />
-      <Box sx={{ flexGrow: 1 }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          transition: "margin-left 0.3s",
+          marginLeft: sidebarOpen ? `${drawerWidth}px` : `${collapsedWidth}px`,
+        }}
+      >
         <Navbar
           toggleSidebar={toggleSidebar}
           toggleMode={toggleMode}

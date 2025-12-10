@@ -13,8 +13,10 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import BrandingWatermarkIcon from "@mui/icons-material/BrandingWatermark";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { Link } from "react-router-dom";
+import { Box } from "@mui/material";
 
-const sidebarWidth = 240;
+const fullWidth = 240;
+const collapsedWidth = 70;
 
 const Sidebar = ({ open }) => {
   const menuItems = [
@@ -28,31 +30,38 @@ const Sidebar = ({ open }) => {
   ];
 
   return (
-    <Drawer
-      variant="persistent"
-      anchor="left"
-      open={open}
+    <Box
       sx={{
-        zIndex: 0,
-        width: sidebarWidth,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: sidebarWidth,
-          boxSizing: "border-box",
-        },
+        width: open ? fullWidth : collapsedWidth,
+        transition: "width 0.3s",
+        overflowX: "hidden",
+        bgcolor: "background.paper",
+        borderRight: "1px solid #ddd",
+        height: "100vh",
+        position: "fixed",
+        mt: 8,
       }}
     >
-      <List sx={{ mt: 8 }}>
+      <List>
         {menuItems.map((item) => (
           <ListItem key={item.text}>
-            <ListItemButton component={Link} to={item.path}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+            <ListItemButton
+              component={Link}
+              to={item.path}
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40, minHeight: 40, pl: 2 }}>
+                {item.icon}
+              </ListItemIcon>
+              {open && <ListItemText primary={item.text} />}
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-    </Drawer>
+    </Box>
   );
 };
 
