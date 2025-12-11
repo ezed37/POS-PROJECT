@@ -280,7 +280,14 @@ export default function CashierPage() {
       <Grid
         container
         spacing={3}
-        sx={{ maxWidth: 1400, px: { xs: 2, md: 3 }, py: 3, mt: 8, ml: 10 }}
+        sx={{
+          maxWidth: 1400,
+          minHeight: "80vh",
+          px: { xs: 2, md: 3 },
+          py: 3,
+          mt: 8,
+          ml: 10,
+        }}
       >
         {/* Cart Column */}
         <Grid sx={{ minWidth: 800, xs: 12, lg: 8 }}>
@@ -289,41 +296,47 @@ export default function CashierPage() {
             sx={{
               borderRadius: 3,
               overflow: "hidden",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
               border: 1,
               borderColor: "divider",
             }}
           >
-            <Box sx={{ p: 3 }}>
+            <Box sx={{ p: 2, flexShrink: 0 }}>
               <Box
-                sx={{ display: "flex", gap: 2, mb: 3, alignItems: "center" }}
+                sx={{ display: "flex", gap: 1, mb: 2, alignItems: "center" }}
               >
                 <TextField
                   autoFocus
-                  placeholder="Search Items or Scan Barcode"
+                  placeholder="Scan Barcode > > >"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleFormInput()}
                   inputRef={searchRef}
+                  size="small"
                   sx={{
                     flex: 1,
-                    "& .MuiOutlinedInput-root": { borderRadius: 2 },
+                    "& .MuiOutlinedInput-root": { borderRadius: 1.5 },
                   }}
                 />
                 <Button
                   variant="outlined"
                   color="primary"
                   onClick={handNewSale}
-                  sx={{ whiteSpace: "nowrap" }}
+                  size="small"
+                  sx={{
+                    whiteSpace: "nowrap",
+                    py: 0.5,
+                    px: 1.5,
+                  }}
                 >
                   NEW SALE
                 </Button>
               </Box>
-              <Typography variant="h5" fontWeight={600} gutterBottom>
-                Shopping Cart
-              </Typography>
 
-              <TableContainer sx={{ maxHeight: 400, mb: 3 }}>
-                <Table stickyHeader>
+              <TableContainer sx={{ flex: 1, maxHeight: 400 }}>
+                <Table stickyHeader size="small">
                   <TableHead>
                     <TableRow>
                       {["Item", "Quantity", "Total", ""].map((header, idx) => (
@@ -336,6 +349,7 @@ export default function CashierPage() {
                             bgcolor: "primary.main",
                             color: "primary.contrastText",
                             fontWeight: 600,
+                            py: 0.8,
                           }}
                         >
                           {header}
@@ -349,7 +363,10 @@ export default function CashierPage() {
                         <TableCell
                           colSpan={4}
                           align="center"
-                          sx={{ py: 4, color: "text.secondary" }}
+                          sx={{
+                            py: 2,
+                            color: "text.secondary",
+                          }}
                         >
                           No items in cart
                         </TableCell>
@@ -367,7 +384,11 @@ export default function CashierPage() {
                               }
                               inputProps={{
                                 min: 1,
-                                style: { textAlign: "center" },
+                                style: {
+                                  textAlign: "center",
+                                  padding: "4px 6px",
+                                  fontSize: "0.8rem",
+                                },
                               }}
                               sx={{ width: 80 }}
                               size="small"
@@ -392,75 +413,79 @@ export default function CashierPage() {
                 </Table>
               </TableContainer>
 
-              <Divider sx={{ my: 3 }} />
+              <Divider sx={{ my: 1 }} />
 
-              <TextField
-                fullWidth
-                label="Discount %"
-                type="number"
-                value={discount}
-                onChange={(e) => setDiscount(Number(e.target.value))}
-                inputProps={{ min: 0, max: 100 }}
-                sx={{ mb: 3, "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-              />
-
-              <Paper
-                variant="outlined"
-                sx={{ p: 3, bgcolor: "background.paper" }}
-              >
-                <Box
+              <Box sx={{ p: 2, flexShrink: 0 }}>
+                <TextField
+                  fullWidth
+                  label="Discount %"
+                  type="number"
+                  value={discount}
+                  onChange={(e) => setDiscount(Number(e.target.value))}
+                  inputProps={{ min: 0, max: 100 }}
+                  size="small"
                   sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 1.5,
+                    mb: 1,
+                    "& .MuiOutlinedInput-root": { borderRadius: 1.5 },
                   }}
-                >
-                  <Typography color="text.secondary">Subtotal:</Typography>
-                  <Typography fontWeight={600}>Rs. {subtotal}</Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 1.5,
-                  }}
-                >
-                  <Typography color="text.secondary">Discount:</Typography>
-                  <Typography color="error" fontWeight={600}>
-                    {discount} %
-                  </Typography>
-                </Box>
-                <Divider sx={{ my: 2 }} />
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    mb: 2,
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={600}>
-                    Final Total:
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    fontWeight={700}
-                    color="primary.main"
+                />
+                <Paper variant="outlined" sx={{ p: 1.5, mb: 2 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      mb: 0.5,
+                    }}
                   >
-                    Rs. {finalTotal}
-                  </Typography>
-                </Box>
-              </Paper>
+                    <Typography color="text.secondary" variant="body2">
+                      Subtotal:
+                    </Typography>
+                    <Typography fontWeight={600} variant="body2">
+                      Rs. {subtotal}
+                    </Typography>
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      mb: 0.5,
+                    }}
+                  >
+                    <Typography color="text.secondary" variant="body2">
+                      Discount:
+                    </Typography>
+                    <Typography color="error" fontWeight={600} variant="body2">
+                      {discount} %
+                    </Typography>
+                  </Box>
+                  <Divider sx={{ my: 1 }} />
+                  <Box
+                    sx={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      Final Total:
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight={700}
+                      color="primary.main"
+                    >
+                      Rs. {finalTotal}
+                    </Typography>
+                  </Box>
+                </Paper>
 
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                disabled={cart.length === 0}
-                sx={{ mt: 4, py: 1.8, fontSize: "1.1rem", fontWeight: 600 }}
-                onClick={completeSale}
-              >
-                Complete Sale
-              </Button>
+                <Button
+                  variant="contained"
+                  size="small"
+                  fullWidth
+                  disabled={cart.length === 0}
+                  sx={{ py: 1, fontWeight: 600 }}
+                  onClick={completeSale}
+                >
+                  Complete Sale
+                </Button>
+              </Box>
             </Box>
           </Paper>
         </Grid>
