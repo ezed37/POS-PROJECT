@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -30,16 +30,17 @@ import useCart from "../hooks/useCart";
 import { printReceipt } from "../utils/recieptPrinter";
 import { addSale } from "../api/salesApi";
 import AuthContext from "../auth/AuthContext";
+import { focusSearchInput } from "../services/focusHelper";
 
-const stock_threshold = 10;
+const STOCK_THRESHOLD = 10;
 
 export default function CashierPage() {
   const { toggleMode, mode } = useContext(ThemeContext);
   const { user } = useContext(AuthContext);
+  const searchRef = useRef(null);
 
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
-  const [searchedItem, setSearchedItem] = useState([]);
   const [addItemDialog, setAddItemDialog] = useState(false);
   const [completeSaleDialog, setCompleteSaleDialog] = useState(false);
   const [customerCash, setCustomerCash] = useState("");
@@ -52,7 +53,6 @@ export default function CashierPage() {
     msg: "",
   });
 
-  //Cart
   const {
     addItem,
     cart,
@@ -69,57 +69,34 @@ export default function CashierPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       const res = await getAllProducts();
-      const allProducts = res.data || [];
-      setProducts(allProducts);
+      setProducts(res.data || []);
     };
-
     fetchProducts();
   }, []);
 
-  //Find regular items
-  const regularProducts = products
-    .filter((item) => item.regular_item)
-    .map((item) => ({
-      ...item,
-      product_name: item.product_name,
-      selling_price: item.selling_price,
-    }));
+  const regularProducts = products.filter((p) => p.regular_item);
 
-  //Handle search on barcode
   const handleFormInput = () => {
-    const item = products.find((i) => i.barcode && i.barcode === search.trim());
-    if (!item) {
-      setAlerts({
-        open: true,
-        type: "error",
-        msg: "Product not found!",
-      });
+    const found = products.find((p) => p.barcode === search.trim());
+    if (!found) {
+      setAlerts({ open: true, type: "error", msg: "Product not found!" });
     } else {
-      handleAddItem(item);
+      handleAddItem(found);
     }
   };
 
-  //Handle add item dialog
-  const handleAddItem = (item) => {
-    if (item.stock_qty > stock_threshold) {
-      setDialogItem(item);
+  const handleAddItem = (product) => {
+    if (product.stock_qty > STOCK_THRESHOLD) {
+      setDialogItem(product);
       setDialogQty(0);
       setAddItemDialog(true);
-    } else if (item.stock_qty > 0) {
-      setAlerts({
-        open: true,
-        type: "warning",
-        msg: "Low stock!",
-      });
-      setDialogItem(item);
+    } else if (product.stock_qty > 0) {
+      setAlerts({ open: true, type: "warning", msg: "Low stock!" });
+      setDialogItem(product);
       setDialogQty(0);
       setAddItemDialog(true);
     } else {
-      setAlerts({
-        open: true,
-        type: "error",
-        msg: "Insufficient stock!",
-      });
+      setAlerts({ open: true, type: "error", msg: "Insufficient stock!" });
     }
   };
 
@@ -129,26 +106,24 @@ export default function CashierPage() {
       setAlerts({
         open: true,
         type: "error",
-        msg: "Quantity must greater than 0",
+        msg: "Quantity must be greater than 0",
       });
     } else {
       addItem(dialogItem, dialogQty);
       setDialogItem(null);
       setAddItemDialog(false);
+
+      setSearch("");
+      focusSearchInput(searchRef);
     }
   };
 
-  //Handle cart items deletion
   const handleRemoveItem = (id) => {
     removeItem(id);
+    focusSearchInput(searchRef);
   };
+  const completeSale = () => setCompleteSaleDialog(true);
 
-  //Handle complete sales
-  const completeSale = () => {
-    setCompleteSaleDialog(true);
-  };
-
-  //Handle finish sale
   const finishSale = () => {
     const cash = Number(customerCash);
     if (isNaN(cash) || cash < finalTotal) {
@@ -159,55 +134,43 @@ export default function CashierPage() {
       });
       return;
     }
-
     const bal = cash - finalTotal;
     setBalance(bal);
 
     handleSaleData();
-
     setTimeout(() => {
-      const recieptData = {
+      printReceipt({
         cart: [...cart],
         subtotal,
         discount,
         finalTotal,
         customerCash: cash,
         balance: bal,
-      };
-
-      //Update stock
+      });
       handleUpdateStock();
-
-      //Add sales details
-
-      printReceipt(recieptData);
-
-      //Clear items
       clearCart();
       setDiscount(0);
       setCustomerCash("");
       setBalance(null);
+      setSearch("");
+      focusSearchInput(searchRef);
       setCompleteSaleDialog(false);
     }, 500);
   };
 
-  //Handle stock update
   const handleUpdateStock = async () => {
     try {
-      const result = cart.map((item) => ({
-        product_id: item._id,
-        stock_qty: item.qty,
+      const updates = cart.map((p) => ({
+        product_id: p._id,
+        stock_qty: p.qty,
       }));
-
-      await updateProductBulk(result);
-    } catch (error) {
-      console.error(error);
+      await updateProductBulk(updates);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  //Handle sales data store
   const handleSaleData = async () => {
-    //Create a doc for the sale
     const itemsData = cart.map((p) => ({
       product_id: p._id,
       product_name: p.product_name,
@@ -229,18 +192,39 @@ export default function CashierPage() {
     await addSale(salesData);
   };
 
+  //Close add item dilog
+  const addItemDialogClose = () => {
+    setAddItemDialog(false);
+    setSearch("");
+    focusSearchInput(searchRef);
+  };
+
+  //Handle a NEW SALE
+  const handNewSale = () => {
+    if (
+      window.confirm("Are you sure want to clear cart & start a new sale? ")
+    ) {
+      clearCart();
+      setDiscount(0);
+      setCustomerCash("");
+      setBalance(null);
+      setSearch("");
+      focusSearchInput(searchRef);
+    }
+  };
+
   return (
     <Box
       sx={{
         width: "100%",
         minHeight: "100vh",
-        bgcolor: "#f5f7fa",
+        bgcolor: "background.default",
         overflow: "auto",
       }}
     >
-      {/* DIALOGS */}
+      <Navbar toggleMode={toggleMode} mode={mode} />
 
-      {/* ADD ITEMS DIALOG */}
+      {/* Add Item Dialog */}
       <Dialog open={addItemDialog} onClose={() => setAddItemDialog(false)}>
         <DialogTitle>Add Item</DialogTitle>
         <DialogContent>
@@ -251,16 +235,11 @@ export default function CashierPage() {
             autoFocus
             value={dialogQty}
             onChange={(e) => setDialogQty(Number(e.target.value))}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                confirmAddItem();
-              }
-            }}
+            onKeyDown={(e) => e.key === "Enter" && confirmAddItem()}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setAddItemDialog(false)}>Cancel</Button>
+          <Button onClick={() => addItemDialogClose()}>Cancel</Button>
           <Button onClick={confirmAddItem}>Add</Button>
         </DialogActions>
       </Dialog>
@@ -272,24 +251,20 @@ export default function CashierPage() {
       >
         <DialogTitle>Complete Payment</DialogTitle>
         <DialogContent>
-          <Typography variant="h6" mb={2}>
-            Total Payble: Rs. {finalTotal}
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Total Payable: Rs. {finalTotal}
           </Typography>
           <TextField
             autoFocus
-            label="Cash from the customer (Rs.)"
+            label="Cash from the customer"
             fullWidth
             type="number"
-            sx={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "5px",
-            }}
             value={customerCash}
             onChange={(e) => setCustomerCash(e.target.value)}
+            sx={{ mb: 2 }}
           />
           {balance !== null && (
-            <Typography mt={2} variant="h6" color="green">
+            <Typography variant="h6" sx={{ color: "success.main" }}>
               Balance: Rs. {balance.toFixed(2)}
             </Typography>
           )}
@@ -302,37 +277,47 @@ export default function CashierPage() {
         </DialogActions>
       </Dialog>
 
-      <Navbar toggleMode={toggleMode} mode={mode} />
-
       <Grid
         container
         spacing={3}
-        sx={{ maxWidth: "1400px", px: { xs: 2, md: 3 }, py: 3, mt: 8, ml: 10 }}
+        sx={{ maxWidth: 1400, px: { xs: 2, md: 3 }, py: 3, mt: 8, ml: 10 }}
       >
-        {/* CART COLUMN */}
-        <Grid sx={{ xs: 12, lg: 8, minWidth: "800px" }}>
+        {/* Cart Column */}
+        <Grid sx={{ minWidth: 800, xs: 12, lg: 8 }}>
           <Paper
             elevation={3}
             sx={{
               borderRadius: 3,
               overflow: "hidden",
-              border: "1px solid #e0e0e0",
+              border: 1,
+              borderColor: "divider",
             }}
           >
             <Box sx={{ p: 3 }}>
-              <TextField
-                fullWidth
-                size="medium"
-                placeholder="Search Items or Scan Barcode"
-                value={search}
-                sx={{
-                  mb: 3,
-                  "& .MuiOutlinedInput-root": { borderRadius: 2 },
-                }}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleFormInput()}
-              />
-
+              <Box
+                sx={{ display: "flex", gap: 2, mb: 3, alignItems: "center" }}
+              >
+                <TextField
+                  autoFocus
+                  placeholder="Search Items or Scan Barcode"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleFormInput()}
+                  inputRef={searchRef}
+                  sx={{
+                    flex: 1,
+                    "& .MuiOutlinedInput-root": { borderRadius: 2 },
+                  }}
+                />
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handNewSale}
+                  sx={{ whiteSpace: "nowrap" }}
+                >
+                  NEW SALE
+                </Button>
+              </Box>
               <Typography variant="h5" fontWeight={600} gutterBottom>
                 Shopping Cart
               </Typography>
@@ -341,59 +326,44 @@ export default function CashierPage() {
                 <Table stickyHeader>
                   <TableHead>
                     <TableRow>
-                      <TableCell
-                        sx={{
-                          bgcolor: "#018790",
-                          color: "white",
-                          fontWeight: 600,
-                        }}
-                      >
-                        Item
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        sx={{
-                          bgcolor: "#018790",
-                          color: "white",
-                          fontWeight: 600,
-                        }}
-                      >
-                        Quantity
-                      </TableCell>
-                      <TableCell
-                        align="right"
-                        sx={{
-                          bgcolor: "#018790",
-                          color: "white",
-                          fontWeight: 600,
-                        }}
-                      >
-                        Total (Rs.)
-                      </TableCell>
-                      <TableCell align="center" sx={{ bgcolor: "#018790" }} />
+                      {["Item", "Quantity", "Total", ""].map((header, idx) => (
+                        <TableCell
+                          key={idx}
+                          align={
+                            idx === 1 ? "center" : idx === 2 ? "right" : "left"
+                          }
+                          sx={{
+                            bgcolor: "primary.main",
+                            color: "primary.contrastText",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {header}
+                        </TableCell>
+                      ))}
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {cart.length === 0 || 0 ? (
+                    {cart.length === 0 ? (
                       <TableRow>
                         <TableCell
                           colSpan={4}
                           align="center"
-                          sx={{ py: 4, color: "#666" }}
+                          sx={{ py: 4, color: "text.secondary" }}
                         >
-                          <Typography>No items in cart</Typography>
+                          No items in cart
                         </TableCell>
                       </TableRow>
                     ) : (
-                      cart.map((item) => (
-                        <TableRow key={item._id} hover>
-                          <TableCell>{item.product_name}</TableCell>
+                      cart.map((p) => (
+                        <TableRow key={p._id} hover>
+                          <TableCell>{p.product_name}</TableCell>
                           <TableCell align="center">
                             <TextField
                               type="number"
-                              value={item.qty}
+                              value={p.qty}
                               onChange={(e) =>
-                                updateQty(item._id, Number(e.target.value))
+                                updateQty(p._id, Number(e.target.value))
                               }
                               inputProps={{
                                 min: 1,
@@ -404,13 +374,13 @@ export default function CashierPage() {
                             />
                           </TableCell>
                           <TableCell align="right">
-                            Rs. {(item.selling_price * item.qty).toFixed(2)}
+                            Rs. {(p.selling_price * p.qty).toFixed(2)}
                           </TableCell>
                           <TableCell align="center">
                             <Button
                               color="error"
                               size="small"
-                              onClick={() => handleRemoveItem(item._id)}
+                              onClick={() => handleRemoveItem(p._id)}
                             >
                               <DeleteOutlineIcon fontSize="small" />
                             </Button>
@@ -434,7 +404,10 @@ export default function CashierPage() {
                 sx={{ mb: 3, "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
               />
 
-              <Paper variant="outlined" sx={{ p: 3, bgcolor: "#f8f9fa" }}>
+              <Paper
+                variant="outlined"
+                sx={{ p: 3, bgcolor: "background.paper" }}
+              >
                 <Box
                   sx={{
                     display: "flex",
@@ -468,7 +441,11 @@ export default function CashierPage() {
                   <Typography variant="h6" fontWeight={600}>
                     Final Total:
                   </Typography>
-                  <Typography variant="h6" fontWeight={700} color="#018790">
+                  <Typography
+                    variant="h6"
+                    fontWeight={700}
+                    color="primary.main"
+                  >
                     Rs. {finalTotal}
                   </Typography>
                 </Box>
@@ -479,14 +456,7 @@ export default function CashierPage() {
                 size="large"
                 fullWidth
                 disabled={cart.length === 0}
-                sx={{
-                  mt: 4,
-                  py: 1.8,
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  bgcolor: "#2e7d32",
-                  "&:hover": { bgcolor: "#1b5e20" },
-                }}
+                sx={{ mt: 4, py: 1.8, fontSize: "1.1rem", fontWeight: 600 }}
                 onClick={completeSale}
               >
                 Complete Sale
@@ -495,24 +465,15 @@ export default function CashierPage() {
           </Paper>
         </Grid>
 
-        {/* REGULAR ITEMS COLUMN */}
-        <Grid sx={{ xs: 12, lg: 4, maxWidth: "500px" }}>
-          <Paper
-            elevation={3}
-            sx={{ borderRadius: 3, p: 3, height: "fit-content" }}
-          >
-            <Typography
-              sx={{ mb: 3 }}
-              variant="h5"
-              fontWeight={600}
-              gutterBottom
-            >
+        {/* Regular Items Column */}
+        <Grid sx={{ maxWidth: 500, xs: 12, lg: 4 }}>
+          <Paper elevation={3} sx={{ borderRadius: 3, p: 3 }}>
+            <Typography variant="h5" fontWeight={600} sx={{ mb: 3 }}>
               Regular Items
             </Typography>
-
             <Grid container spacing={2}>
-              {regularProducts.map((item) => (
-                <Grid sx={{ xs: 6, sm: 4 }} key={item._id}>
+              {regularProducts.map((p) => (
+                <Grid sx={{ xs: 6, sm: 4 }} key={p._id}>
                   <Card
                     variant="outlined"
                     sx={{
@@ -523,15 +484,14 @@ export default function CashierPage() {
                         boxShadow: 4,
                       },
                       minWidth: 130,
+                      bgcolor: "background.paper",
                     }}
-                    onClick={() => handleAddItem(item)}
+                    onClick={() => handleAddItem(p)}
                   >
                     <CardContent sx={{ py: 1, textAlign: "center" }}>
-                      <Typography fontWeight={500}>
-                        {item.product_name}
-                      </Typography>
+                      <Typography fontWeight={500}>{p.product_name}</Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Rs. {item.selling_price}
+                        Rs. {p.selling_price}
                       </Typography>
                     </CardContent>
                   </Card>
@@ -542,7 +502,6 @@ export default function CashierPage() {
         </Grid>
       </Grid>
 
-      {/* Snackbar for Alert */}
       <Snackbar
         open={alerts.open}
         autoHideDuration={4000}
