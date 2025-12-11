@@ -78,6 +78,11 @@ export default function useCart(initial = []) {
     [subtotal, discount]
   );
 
+  const costSubtotal = useMemo(
+    () => cart.reduce((sum, it) => sum + it.qty * (it.cost_price ?? 0), 0),
+    [cart]
+  );
+
   return {
     cart,
     discount,
@@ -90,5 +95,6 @@ export default function useCart(initial = []) {
     clearCart,
     subtotal,
     finalTotal,
+    costSubtotal,
   };
 }

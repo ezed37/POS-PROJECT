@@ -329,7 +329,7 @@ export default function SalesPage() {
                     <TableCell
                       sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
                     >
-                      {totalQty[index] || 0}
+                      {Math.floor(totalQty[index]) || 0}
                     </TableCell>
                     <TableCell
                       sx={{ fontSize: "0.85rem", padding: "10px 14px" }}

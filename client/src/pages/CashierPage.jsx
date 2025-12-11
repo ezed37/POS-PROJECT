@@ -25,18 +25,25 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Navbar from "../components/NavBar";
 import ThemeContext from "../theme/ThemeContext";
-import { getAllProducts } from "../api/productsApi";
+import { getAllProducts, updateProductBulk } from "../api/productsApi";
 import useCart from "../hooks/useCart";
+import { printReceipt } from "../utils/recieptPrinter";
+import { addSale } from "../api/salesApi";
+import AuthContext from "../auth/AuthContext";
 
 const stock_threshold = 10;
 
 export default function CashierPage() {
   const { toggleMode, mode } = useContext(ThemeContext);
+  const { user } = useContext(AuthContext);
 
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [searchedItem, setSearchedItem] = useState([]);
   const [addItemDialog, setAddItemDialog] = useState(false);
+  const [completeSaleDialog, setCompleteSaleDialog] = useState(false);
+  const [customerCash, setCustomerCash] = useState("");
+  const [balance, setBalance] = useState(null);
   const [dialogItem, setDialogItem] = useState(null);
   const [dialogQty, setDialogQty] = useState(0);
   const [alerts, setAlerts] = useState({
@@ -55,6 +62,8 @@ export default function CashierPage() {
     finalTotal,
     discount,
     setDiscount,
+    clearCart,
+    costSubtotal,
   } = useCart([]);
 
   useEffect(() => {
@@ -134,8 +143,91 @@ export default function CashierPage() {
     removeItem(id);
   };
 
-  //TEST
-  console.log(cart);
+  //Handle complete sales
+  const completeSale = () => {
+    setCompleteSaleDialog(true);
+  };
+
+  //Handle finish sale
+  const finishSale = () => {
+    const cash = Number(customerCash);
+    if (isNaN(cash) || cash < finalTotal) {
+      setAlerts({
+        open: true,
+        type: "error",
+        msg: "Customer cash is insufficient!",
+      });
+      return;
+    }
+
+    const bal = cash - finalTotal;
+    setBalance(bal);
+
+    handleSaleData();
+
+    setTimeout(() => {
+      const recieptData = {
+        cart: [...cart],
+        subtotal,
+        discount,
+        finalTotal,
+        customerCash: cash,
+        balance: bal,
+      };
+
+      //Update stock
+      handleUpdateStock();
+
+      //Add sales details
+
+      printReceipt(recieptData);
+
+      //Clear items
+      clearCart();
+      setDiscount(0);
+      setCustomerCash("");
+      setBalance(null);
+      setCompleteSaleDialog(false);
+    }, 500);
+  };
+
+  //Handle stock update
+  const handleUpdateStock = async () => {
+    try {
+      const result = cart.map((item) => ({
+        product_id: item._id,
+        stock_qty: item.qty,
+      }));
+
+      await updateProductBulk(result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  //Handle sales data store
+  const handleSaleData = async () => {
+    //Create a doc for the sale
+    const itemsData = cart.map((p) => ({
+      product_id: p._id,
+      product_name: p.product_name,
+      qty: p.qty,
+      cost_price: p.cost_price,
+      selling_price: p.selling_price,
+    }));
+
+    const salesData = {
+      user_name: user.username,
+      reference: "INV-" + Date.now(),
+      sub_total: subtotal,
+      discount: discount,
+      final_total: finalTotal,
+      final_cost: costSubtotal,
+      items: itemsData,
+    };
+
+    await addSale(salesData);
+  };
 
   return (
     <Box
@@ -173,6 +265,43 @@ export default function CashierPage() {
         </DialogActions>
       </Dialog>
 
+      {/* Complete Sale Dialog */}
+      <Dialog
+        open={completeSaleDialog}
+        onClose={() => setCompleteSaleDialog(false)}
+      >
+        <DialogTitle>Complete Payment</DialogTitle>
+        <DialogContent>
+          <Typography variant="h6" mb={2}>
+            Total Payble: Rs. {finalTotal}
+          </Typography>
+          <TextField
+            autoFocus
+            label="Cash from the customer (Rs.)"
+            fullWidth
+            type="number"
+            sx={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "5px",
+            }}
+            value={customerCash}
+            onChange={(e) => setCustomerCash(e.target.value)}
+          />
+          {balance !== null && (
+            <Typography mt={2} variant="h6" color="green">
+              Balance: Rs. {balance.toFixed(2)}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCompleteSaleDialog(false)}>Cancel</Button>
+          <Button variant="contained" color="success" onClick={finishSale}>
+            Confirm Sale
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Navbar toggleMode={toggleMode} mode={mode} />
 
       <Grid
@@ -181,7 +310,7 @@ export default function CashierPage() {
         sx={{ maxWidth: "1400px", px: { xs: 2, md: 3 }, py: 3, mt: 8, ml: 10 }}
       >
         {/* CART COLUMN */}
-        <Grid item xs={12} lg={8} minWidth={"800px"}>
+        <Grid sx={{ xs: 12, lg: 8, minWidth: "800px" }}>
           <Paper
             elevation={3}
             sx={{
@@ -257,14 +386,14 @@ export default function CashierPage() {
                       </TableRow>
                     ) : (
                       cart.map((item) => (
-                        <TableRow key={item.id} hover>
+                        <TableRow key={item._id} hover>
                           <TableCell>{item.product_name}</TableCell>
                           <TableCell align="center">
                             <TextField
                               type="number"
                               value={item.qty}
                               onChange={(e) =>
-                                updateQty(item.id, Number(e.target.value))
+                                updateQty(item._id, Number(e.target.value))
                               }
                               inputProps={{
                                 min: 1,
@@ -281,7 +410,7 @@ export default function CashierPage() {
                             <Button
                               color="error"
                               size="small"
-                              onClick={() => handleRemoveItem(item.id)}
+                              onClick={() => handleRemoveItem(item._id)}
                             >
                               <DeleteOutlineIcon fontSize="small" />
                             </Button>
@@ -358,6 +487,7 @@ export default function CashierPage() {
                   bgcolor: "#2e7d32",
                   "&:hover": { bgcolor: "#1b5e20" },
                 }}
+                onClick={completeSale}
               >
                 Complete Sale
               </Button>
@@ -366,7 +496,7 @@ export default function CashierPage() {
         </Grid>
 
         {/* REGULAR ITEMS COLUMN */}
-        <Grid item xs={12} lg={4} maxWidth={"500px"}>
+        <Grid sx={{ xs: 12, lg: 4, maxWidth: "500px" }}>
           <Paper
             elevation={3}
             sx={{ borderRadius: 3, p: 3, height: "fit-content" }}
@@ -382,7 +512,7 @@ export default function CashierPage() {
 
             <Grid container spacing={2}>
               {regularProducts.map((item) => (
-                <Grid item xs={6} sm={4} key={item.id}>
+                <Grid sx={{ xs: 6, sm: 4 }} key={item._id}>
                   <Card
                     variant="outlined"
                     sx={{

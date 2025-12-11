@@ -3,8 +3,15 @@ import Sales from "../models/salesModel.js";
 //Create a sale
 export const createSale = async (req, res) => {
   try {
-    const { user_name, reference, sub_total, discount, final_total, items } =
-      req.body;
+    const {
+      user_name,
+      reference,
+      sub_total,
+      discount,
+      final_total,
+      items,
+      final_cost,
+    } = req.body;
 
     // Basic validation
     if (!user_name || !sub_total || !final_total || !items) {
@@ -17,6 +24,7 @@ export const createSale = async (req, res) => {
       sub_total,
       discount: discount || 0,
       final_total,
+      final_cost,
       items,
     });
 
