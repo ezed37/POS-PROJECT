@@ -116,9 +116,17 @@ export default function CashierPage() {
 
   const confirmAddItem = () => {
     if (!dialogItem) return;
-    addItem(dialogItem, dialogQty);
-    setDialogItem(null);
-    setAddItemDialog(false);
+    if (dialogQty === 0) {
+      setAlerts({
+        open: true,
+        type: "error",
+        msg: "Quantity must greater than 0",
+      });
+    } else {
+      addItem(dialogItem, dialogQty);
+      setDialogItem(null);
+      setAddItemDialog(false);
+    }
   };
 
   //Handle cart items deletion
