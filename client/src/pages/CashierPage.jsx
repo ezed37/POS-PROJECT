@@ -31,6 +31,7 @@ import { printReceipt } from "../utils/recieptPrinter";
 import { addSale } from "../api/salesApi";
 import AuthContext from "../auth/AuthContext";
 import { focusSearchInput } from "../services/focusHelper";
+import { useShortcuts } from "../hooks/useShortcuts";
 
 const STOCK_THRESHOLD = 10;
 
@@ -212,6 +213,13 @@ export default function CashierPage() {
       focusSearchInput(searchRef);
     }
   };
+
+  //Using shortcuts
+  useShortcuts({ ctrl: true, key: "f" }, () => {
+    if (cart.length !== 0) completeSale();
+  });
+
+  useShortcuts({ ctrl: true, key: "/" }, () => handNewSale());
 
   return (
     <Box
