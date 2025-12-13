@@ -14,10 +14,11 @@ export function printReceipt({
         <style>
           body {
             font-family: monospace;
-            font-size: 12px;
+            font-size: 11px;
             width: 80mm;
+            max-width:300px;
             margin: 0;
-            padding: 5px;
+            padding: 5px 5px 20mm 5px;
           }
           .center { text-align: center; }
           .line { border-top:1px dashed #000; margin:6px 0; }
@@ -37,10 +38,22 @@ export function printReceipt({
           }
           .summary-row span { text-align: right; }
           hr { border: none; border-top: 1px dashed #000; margin: 5px 0; }
+          .logo {
+            display: block;
+            margin: 5px auto;
+            max-width: 220px;
+          }
+          img {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
         </style>
       </head>
       <body>
-        <h2 class="center">MY STORE</h2>
+        <img src="recieptLogo.png" class="logo" />
+        <h2 class="center">Tharindi Super Mart</h2>
+        <h4 class="center">Horathepola, Welipennagahamulla</h4>
+        <p class="center">077-0072803 - Udaya Kumara</p>
         <div class="center">${new Date().toLocaleString()}</div>
         <hr>
         <div class="item-header">
@@ -77,6 +90,8 @@ export function printReceipt({
     ).toFixed(2)}</span></div>
     <hr>
     <div class="center" style="margin-top:10px;">***** THANK YOU *****</div>
+    <div class="center" style="margin-top:10px;">Come Again!</div>
+    <div class="center" style="margin-top:10px;">Come Again!</div>
   </body>
   </html>
   `);
