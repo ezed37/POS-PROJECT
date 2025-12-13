@@ -215,7 +215,7 @@ export default function CashierPage() {
   };
 
   //Using shortcuts
-  useShortcuts({ ctrl: true, key: "f" }, () => {
+  useShortcuts({ ctrl: true, key: "z" }, () => {
     if (cart.length !== 0) completeSale();
   });
 
@@ -269,6 +269,7 @@ export default function CashierPage() {
             type="number"
             value={customerCash}
             onChange={(e) => setCustomerCash(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && finishSale()}
             sx={{ mb: 2 }}
           />
           {balance !== null && (
