@@ -37,12 +37,12 @@ export default function useCart(initial = []) {
   const addItem = (item, qty = 1) => {
     const normalizedItem = {
       ...item,
-      id: item._id,
-      sellPrice: Number(item.selling_price ?? 0),
+      _id: item._id,
+      selling_price: Number(item.selling_price ?? 0),
     };
 
     setCart((prev) => {
-      const existing = prev.find((c) => c.id === item._id);
+      const existing = prev.find((c) => c._id === item._id);
       if (existing) {
         return prev.map((c) =>
           c.id === item._id ? { ...c, qty: c.qty + qty } : c
@@ -69,7 +69,7 @@ export default function useCart(initial = []) {
   };
 
   const subtotal = useMemo(
-    () => cart.reduce((sum, it) => sum + it.qty * (it.sellPrice ?? 0), 0),
+    () => cart.reduce((sum, it) => sum + it.qty * (it.selling_price ?? 0), 0),
     [cart]
   );
 
@@ -82,6 +82,13 @@ export default function useCart(initial = []) {
     () => cart.reduce((sum, it) => sum + it.qty * (it.cost_price ?? 0), 0),
     [cart]
   );
+
+  const actualTotalPrice = useMemo(
+    () => cart.reduce((sum, it) => sum + it.qty * (it.actual_price ?? 0), 0),
+    [cart]
+  );
+
+  const customerTotalProfit = finalTotal - actualTotalPrice;
 
   return {
     cart,
@@ -96,5 +103,6 @@ export default function useCart(initial = []) {
     subtotal,
     finalTotal,
     costSubtotal,
+    customerTotalProfit,
   };
 }

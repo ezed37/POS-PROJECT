@@ -11,6 +11,7 @@ export const createSale = async (req, res) => {
       final_total,
       items,
       final_cost,
+      total_profit,
     } = req.body;
 
     // Basic validation
@@ -26,6 +27,7 @@ export const createSale = async (req, res) => {
       final_total,
       final_cost,
       items,
+      total_profit,
     });
 
     const savedSale = await newSale.save();

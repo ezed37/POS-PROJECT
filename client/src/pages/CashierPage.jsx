@@ -27,7 +27,7 @@ import Navbar from "../components/NavBar";
 import ThemeContext from "../theme/ThemeContext";
 import { getAllProducts, updateProductBulk } from "../api/productsApi";
 import useCart from "../hooks/useCart";
-import { printReceipt } from "../utils/recieptPrinter";
+import { printReceipt } from "../utils/receiptPrinters";
 import { addSale } from "../api/salesApi";
 import AuthContext from "../auth/AuthContext";
 import { focusSearchInput } from "../services/focusHelper";
@@ -65,6 +65,7 @@ export default function CashierPage() {
     setDiscount,
     clearCart,
     costSubtotal,
+    customerTotalProfit,
   } = useCart([]);
 
   useEffect(() => {
@@ -147,6 +148,7 @@ export default function CashierPage() {
         finalTotal,
         customerCash: cash,
         balance: bal,
+        customerTotalProfit,
       });
       handleUpdateStock();
       clearCart();
@@ -220,6 +222,9 @@ export default function CashierPage() {
   });
 
   useShortcuts({ ctrl: true, key: "/" }, () => handNewSale());
+
+  //Test
+  console.log(cart);
 
   return (
     <Box
