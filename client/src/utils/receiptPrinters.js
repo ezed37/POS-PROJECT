@@ -89,6 +89,7 @@ export function printReceipt({
             <img
                 id="receiptLogo"
                 src="/receiptLogo.png"
+                alt="LOGO"
                 style="width: 40mm; height:auto; margin-bottom:5px;"
             >
         </div>
@@ -116,7 +117,7 @@ export function printReceipt({
         <span class="actual-price">${(Number(item.actual_price) || 0).toFixed(
           2
         )}</span>
-        <span class="price">${item.selling_price.toFixed(2)}</span>
+        <span class="price">${Number(item.selling_price || 0).toFixed(2)}</span>
         <span class="total">${itemTotal}</span>
       </div>
     `);
@@ -138,7 +139,7 @@ export function printReceipt({
     ).toFixed(2)}</span></div>
     <hr>
     ${
-      customerTotalProfit != 0
+      customerTotalProfit > 0
         ? `
         <div class="summary-row1">
             <span>ඔබ ලැබූ ලාභය:</span>

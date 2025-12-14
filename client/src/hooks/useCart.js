@@ -58,7 +58,7 @@ export default function useCart(initial = []) {
   };
 
   const removeItem = (id) => {
-    setCart((prev) => prev.filter((c) => c.id !== id));
+    setCart((prev) => prev.filter((c) => c._id !== id));
   };
 
   const clearCart = () => {
@@ -88,7 +88,7 @@ export default function useCart(initial = []) {
     [cart]
   );
 
-  const customerTotalProfit = finalTotal - actualTotalPrice;
+  const customerTotalProfit = actualTotalPrice - finalTotal;
 
   return {
     cart,

@@ -223,9 +223,6 @@ export default function CashierPage() {
 
   useShortcuts({ ctrl: true, key: "/" }, () => handNewSale());
 
-  //Test
-  console.log(cart);
-
   return (
     <Box
       sx={{
