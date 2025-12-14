@@ -55,11 +55,15 @@ export function printReceipt({
             word-break: break-word;
           }
 
+          .item-row .qty { flex: 1.2; }
+          .item-row .actual-price { flex: 1.6; }
+          .item-row .price { flex: 1.6; }
+          .item-row .total { flex: 1.8; }
+
           .item-row .qty,
           .item-row .price,
           .item-row .total,
           .item-row .actual-price {
-            flex: 1;
             text-align: right;
             white-space: nowrap;
           }
