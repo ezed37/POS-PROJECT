@@ -157,8 +157,7 @@ export default function SalesPage() {
             <Grid item xs={12} size={8}>
               <Typography fontSize={14}>
                 <span style={{ fontWeight: "bold" }}>Items Qty:</span>{" "}
-                {viewSale?.items?.reduce((sum, item) => sum + item.qty, 0) ||
-                  "N/A"}
+                {viewSale?.items?.length || 0}
               </Typography>
             </Grid>
 
@@ -329,7 +328,7 @@ export default function SalesPage() {
                     <TableCell
                       sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
                     >
-                      {Math.floor(totalQty[index]) || 0}
+                      {s?.items?.length || 0}
                     </TableCell>
                     <TableCell
                       sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
