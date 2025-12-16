@@ -520,6 +520,7 @@ export default function CashierPage() {
                         boxShadow: 4,
                       },
                       minWidth: 130,
+                      maxWidth: 150,
                       bgcolor: "background.paper",
                     }}
                     onClick={() => handleAddItem(p)}
