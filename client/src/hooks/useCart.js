@@ -45,7 +45,7 @@ export default function useCart(initial = []) {
       const existing = prev.find((c) => c._id === item._id);
       if (existing) {
         return prev.map((c) =>
-          c.id === item._id ? { ...c, qty: c.qty + qty } : c
+          c._id === item._id ? { ...c, qty: c.qty + qty } : c
         );
       }
       return [...prev, { ...normalizedItem, qty }];
@@ -54,7 +54,7 @@ export default function useCart(initial = []) {
 
   const updateQty = (id, qty) => {
     if (qty <= 0) return;
-    setCart((prev) => prev.map((c) => (c.id === id ? { ...c, qty } : c)));
+    setCart((prev) => prev.map((c) => (c._id === id ? { ...c, qty } : c)));
   };
 
   const removeItem = (id) => {
