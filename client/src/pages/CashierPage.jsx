@@ -507,7 +507,7 @@ export default function CashierPage() {
             <Typography variant="h5" fontWeight={600} sx={{ mb: 3 }}>
               Regular Items
             </Typography>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} sx={{ justifyContent: "center" }}>
               {regularProducts.map((p) => (
                 <Grid sx={{ xs: 6, sm: 4 }} key={p._id}>
                   <Card
@@ -519,8 +519,10 @@ export default function CashierPage() {
                         transform: "translateY(-4px)",
                         boxShadow: 4,
                       },
-                      minWidth: 130,
-                      maxWidth: 150,
+                      minWidth: 120,
+                      maxWidth: 120,
+                      minHeight: 75,
+                      maxHeight: 75,
                       bgcolor: "background.paper",
                     }}
                     onClick={() => handleAddItem(p)}
