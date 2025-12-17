@@ -169,6 +169,21 @@ function ProductsPage() {
   };
 
   const handleUpdateSubmit = async () => {
+    if (
+      !newProduct.product_name ||
+      !newProduct.category_id ||
+      !newProduct.brand_id ||
+      newProduct.cost_price <= 0 ||
+      newProduct.actual_price <= 0 ||
+      newProduct.selling_price <= 0
+    ) {
+      setAlerts({
+        open: true,
+        type: "error",
+        msg: "Please fill all required fields with valid values.",
+      });
+      return;
+    }
     try {
       await updateProduct(editProduct._id, editProduct);
       setProducts((prev) =>
