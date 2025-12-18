@@ -20,6 +20,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -42,6 +43,9 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 
 function ProductsPage() {
   const theme = useTheme();
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [alerts, setAlerts] = useState({
     open: false,
     type: "success",
@@ -215,6 +219,17 @@ function ProductsPage() {
   useEffect(() => {
     getAllProducts().then((res) => setProducts(res.data));
   }, []);
+
+  // Handle page change
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  // Handle change in rows per page
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   return (
     <>
@@ -654,54 +669,65 @@ function ProductsPage() {
               </TableHead>
 
               <TableBody>
-                {filteredAndSortedProducts.map((product) => (
-                  <TableRow
-                    key={product._id}
-                    hover
-                    sx={{
-                      "&:nth-of-type(odd)": {
-                        backgroundColor: theme.palette.action.hover,
-                      },
-                    }}
-                  >
-                    <TableCell>{product.product_id}</TableCell>
-                    <TableCell>{product.product_name}</TableCell>
-                    <TableCell>{product.stock_qty}</TableCell>
-                    <TableCell>
-                      {Number(product.cost_price).toFixed(2)}
-                    </TableCell>
-                    <TableCell>
-                      {Number(product.actual_price).toFixed(2)}
-                    </TableCell>
-                    <TableCell>
-                      {Number(product.selling_price).toFixed(2)}
-                    </TableCell>
-                    <TableCell>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          gap: 1,
-                          justifyContent: "center",
-                        }}
-                      >
-                        <IconButton
-                          color="primary"
-                          onClick={() => openUpdateDialog(product)}
+                {filteredAndSortedProducts
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((product) => (
+                    <TableRow
+                      key={product._id}
+                      hover
+                      sx={{
+                        "&:nth-of-type(odd)": {
+                          backgroundColor: theme.palette.action.hover,
+                        },
+                      }}
+                    >
+                      <TableCell>{product.product_id}</TableCell>
+                      <TableCell>{product.product_name}</TableCell>
+                      <TableCell>{product.stock_qty}</TableCell>
+                      <TableCell>
+                        {Number(product.cost_price).toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        {Number(product.actual_price).toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        {Number(product.selling_price).toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 1,
+                            justifyContent: "center",
+                          }}
                         >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          color="error"
-                          onClick={() => handleDelete(product._id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                          <IconButton
+                            color="primary"
+                            onClick={() => openUpdateDialog(product)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            color="error"
+                            onClick={() => handleDelete(product._id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
+            <TablePagination
+              component="div"
+              count={filteredAndSortedProducts.length}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[10, 15, 25]}
+            />
           </TableContainer>
         </Paper>
       </Box>
