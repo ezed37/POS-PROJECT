@@ -78,8 +78,6 @@ function ProductsPage() {
     order: "asc",
   });
 
-  //const searchInputRef = useRef(null);
-
   // Filtering & Sorting
   const filteredAndSortedProducts = [...products]
     .filter(
@@ -116,14 +114,15 @@ function ProductsPage() {
     setBrands(brandRes.data);
   };
 
-  const openAddDialog = async () => {
-    await loadCategoriesAndBrands();
+  useEffect(() => {
+    loadCategoriesAndBrands();
+  }, []);
+
+  const openAddDialog = () => {
     setAddDialogOpen(true);
-    //setTimeout(() => searchInputRef.current?.focus(), 100);
   };
 
-  const openUpdateDialog = async (product) => {
-    await loadCategoriesAndBrands();
+  const openUpdateDialog = (product) => {
     setEditProduct(product);
     setUpdateDialogOpen(true);
   };
@@ -647,6 +646,7 @@ function ProductsPage() {
                     </IconButton>
                   </TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Product Name</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Brand</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>
                     Stock Qty
                     <IconButton
@@ -683,6 +683,10 @@ function ProductsPage() {
                     >
                       <TableCell>{product.product_id}</TableCell>
                       <TableCell>{product.product_name}</TableCell>
+                      <TableCell>
+                        {brands.find((b) => b.brand_id === product.brand_id)
+                          ?.brand_name || "—"}
+                      </TableCell>
                       <TableCell>{product.stock_qty}</TableCell>
                       <TableCell>
                         {Number(product.cost_price).toFixed(2)}
