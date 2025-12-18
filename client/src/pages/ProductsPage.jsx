@@ -395,7 +395,7 @@ function ProductsPage() {
 
         <DialogContent dividers>
           <Grid container spacing={2} sx={{ pt: 1 }}>
-            <Grid item xs={12} sm={6} mt={2}>
+            <Grid sx={{ xs: 12, sm: 6, mt: 2, minWidth: 250 }}>
               <TextField
                 fullWidth
                 label="Product Name"
@@ -409,7 +409,7 @@ function ProductsPage() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} mt={2}>
+            <Grid sx={{ xs: 12, sm: 6, mt: 2, minWidth: 250 }}>
               <TextField
                 fullWidth
                 label="Barcode"
@@ -420,7 +420,7 @@ function ProductsPage() {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid sx={{ xs: 12, minWidth: 250 }}>
               <TextField
                 select
                 fullWidth
@@ -440,7 +440,7 @@ function ProductsPage() {
               </TextField>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid sx={{ xs: 12, minWidth: 250 }}>
               <TextField
                 select
                 fullWidth
@@ -462,7 +462,7 @@ function ProductsPage() {
               </TextField>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid sx={{ xs: 12, minWidth: 250 }}>
               <TextField
                 select
                 fullWidth
@@ -484,7 +484,7 @@ function ProductsPage() {
               </TextField>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid sx={{ xs: 12, minWidth: 250 }}>
               <TextField
                 select
                 fullWidth
@@ -504,7 +504,7 @@ function ProductsPage() {
               </TextField>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid sx={{ xs: 12, minWidth: 250 }}>
               <TextField
                 fullWidth
                 label="Stock Qty"
@@ -518,7 +518,7 @@ function ProductsPage() {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid sx={{ xs: 12, minWidth: 250 }}>
               <TextField
                 fullWidth
                 label="Cost Price (Rs.) per Unit"
@@ -532,7 +532,7 @@ function ProductsPage() {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid sx={{ xs: 12, minWidth: 250 }}>
               <TextField
                 fullWidth
                 label="Actual Price (Rs.) per Unit"
@@ -546,7 +546,7 @@ function ProductsPage() {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid sx={{ xs: 12, minWidth: 250 }}>
               <TextField
                 fullWidth
                 label="Selling Price (Rs.) per Unit"
