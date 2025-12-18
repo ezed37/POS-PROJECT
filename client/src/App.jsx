@@ -1,12 +1,17 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import LoginPage from "./pages/LoginPage";
 import AuthContext from "./auth/AuthContext";
 import AdminPage from "./pages/AdminPage";
 import CashierPage from "./pages/CashierPage";
+import Loading from "./components/Loading";
 
 function App() {
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <Routes>
