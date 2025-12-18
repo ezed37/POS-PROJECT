@@ -16,6 +16,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
@@ -35,6 +36,8 @@ const headStyles = {
 export default function SalesPage() {
   const theme = useTheme();
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [alerts, setAlerts] = useState(false);
   const [saleData, setSalesData] = useState([]);
   const [filteredSales, setFilteredSales] = useState([]);
@@ -95,6 +98,17 @@ export default function SalesPage() {
   const totalQty = saleData.map((sale) =>
     sale.items.reduce((sum, item) => sum + item.qty, 0)
   );
+
+  //Handle page change
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  //Handle rows per page change
+  const handleRowsPerPage = (event) => {
+    setRowsPerPage(event.target.value);
+    setPage(0);
+  };
 
   return (
     <Box
@@ -304,73 +318,84 @@ export default function SalesPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredSales.map((s, index) => (
-                  <TableRow
-                    key={s._id}
-                    hover
-                    sx={{
-                      backgroundColor:
-                        index % 2 === 0
-                          ? "rgba(255,255,255,0.03)"
-                          : "transparent",
-                    }}
-                  >
-                    <TableCell
-                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                {filteredSales
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((s, index) => (
+                    <TableRow
+                      key={s._id}
+                      hover
+                      sx={{
+                        backgroundColor:
+                          index % 2 === 0
+                            ? "rgba(255,255,255,0.03)"
+                            : "transparent",
+                      }}
                     >
-                      {s.reference}
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
-                    >
-                      {new Date(s.createdAt).toISOString().split("T")[0]}
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
-                    >
-                      {s?.items?.length || 0}
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
-                    >
-                      {s.payment_type}
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
-                    >
-                      {s.final_total}
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          gap: 0,
-                          justifyContent: "center",
-                        }}
+                      <TableCell
+                        sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
                       >
-                        <IconButton
-                          color="primary"
-                          onClick={() => {
-                            setViewSale(s);
-                            openViewDialog();
+                        {s.reference}
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                      >
+                        {new Date(s.createdAt).toISOString().split("T")[0]}
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                      >
+                        {s?.items?.length || 0}
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                      >
+                        {s.payment_type}
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                      >
+                        {s.final_total}
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontSize: "0.85rem", padding: "10px 14px" }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 0,
+                            justifyContent: "center",
                           }}
                         >
-                          <RemoveRedEyeIcon />
-                        </IconButton>
-                        <IconButton
-                          color="error"
-                          onClick={() => handleDeleteSale(s._id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                          <IconButton
+                            color="primary"
+                            onClick={() => {
+                              setViewSale(s);
+                              openViewDialog();
+                            }}
+                          >
+                            <RemoveRedEyeIcon />
+                          </IconButton>
+                          <IconButton
+                            color="error"
+                            onClick={() => handleDeleteSale(s._id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
+            <TablePagination
+              component="div"
+              count={filteredSales.length}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleRowsPerPage}
+              rowsPerPageOptions={[10, 15, 20]}
+            />
           </TableContainer>
         </Paper>
       </Box>
