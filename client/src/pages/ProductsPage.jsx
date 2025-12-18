@@ -170,12 +170,12 @@ function ProductsPage() {
 
   const handleUpdateSubmit = async () => {
     if (
-      !newProduct.product_name ||
-      !newProduct.category_id ||
-      !newProduct.brand_id ||
-      newProduct.cost_price <= 0 ||
-      newProduct.actual_price <= 0 ||
-      newProduct.selling_price <= 0
+      !editProduct.product_name ||
+      !editProduct.category_id ||
+      !editProduct.brand_id ||
+      editProduct.cost_price <= 0 ||
+      editProduct.actual_price <= 0 ||
+      editProduct.selling_price <= 0
     ) {
       setAlerts({
         open: true,
