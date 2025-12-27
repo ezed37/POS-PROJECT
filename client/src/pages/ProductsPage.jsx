@@ -730,7 +730,7 @@ function ProductsPage() {
               onPageChange={handleChangePage}
               rowsPerPage={rowsPerPage}
               onRowsPerPageChange={handleChangeRowsPerPage}
-              rowsPerPageOptions={[10, 15, 25]}
+              rowsPerPageOptions={[10, 15, 25, 50, 100]}
             />
           </TableContainer>
         </Paper>
