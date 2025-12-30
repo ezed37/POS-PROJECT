@@ -193,7 +193,7 @@ const Dashboard = ({ chartData }) => {
           <Grid sx={{ xs: 12, md: 6, lg: 4, minWidth: 320 }}>
             <StatCard
               title="Today Sales"
-              value={`Rs. ${totalDaySale}`}
+              value={`Rs. ${totalDaySale.toFixed(2)}`}
               subtitle="Total sales amount"
               icon={AttachMoney}
               iconColor={theme.palette.error.main}
@@ -227,7 +227,7 @@ const Dashboard = ({ chartData }) => {
           <Grid sx={{ xs: 12, md: 6, lg: 4, minWidth: 320 }}>
             <StatCard
               title="Monthly Sales"
-              value={`Rs. ${totalMonthSale}`}
+              value={`Rs. ${totalMonthSale.toFixed(2)}`}
               subtitle="Total sales this month"
               icon={AttachMoney}
               iconColor={theme.palette.success.main}

@@ -303,6 +303,7 @@ export default function BrandsPage() {
                 </Typography>
               </Box>
               <Button
+                autoFocus
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={openAddbrandDialog}

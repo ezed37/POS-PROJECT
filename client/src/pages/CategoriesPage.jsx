@@ -305,6 +305,7 @@ export default function CategoriesPage() {
                 </Typography>
               </Box>
               <Button
+                autoFocus
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={openAddCategoryDialog}

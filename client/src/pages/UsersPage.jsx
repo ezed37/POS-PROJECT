@@ -547,6 +547,7 @@ function UsersPage() {
               </Typography>
             </Box>
             <Button
+              autoFocus
               variant="contained"
               startIcon={<AddIcon />}
               onClick={openAddDialog}

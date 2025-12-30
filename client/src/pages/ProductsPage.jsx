@@ -596,6 +596,7 @@ function ProductsPage() {
             }}
           >
             <TextField
+              autoFocus
               placeholder="Search by name or barcode..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -687,7 +688,7 @@ function ProductsPage() {
                         {brands.find((b) => b.brand_id === product.brand_id)
                           ?.brand_name || "—"}
                       </TableCell>
-                      <TableCell>{product.stock_qty}</TableCell>
+                      <TableCell>{product.stock_qty.toFixed(2)}</TableCell>
                       <TableCell>
                         {Number(product.cost_price).toFixed(2)}
                       </TableCell>

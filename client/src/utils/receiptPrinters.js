@@ -143,7 +143,7 @@ export function printReceipt({
     ).toFixed(2)}</span></div>
     <hr>
     ${
-      customerTotalProfit > 0
+      customerTotalProfit > 40
         ? `
         <div class="summary-row1">
             <span>ඔබ ලැබූ ලාභය:</span>
