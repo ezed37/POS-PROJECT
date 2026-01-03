@@ -29,7 +29,6 @@ export const createUser = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User created successfully",
-      data: user,
     });
   } catch (error) {
     res.status(400).json({
@@ -94,8 +93,18 @@ export const updateUser = async (req, res) => {
       });
     }
 
-    if (username) user.username = username;
-    if (role && req.user && req.user.role === "admin") {
+    if (username && username !== user.username) {
+      const existingUser = await User.findOne({ username });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: "Username already exists!",
+        });
+      }
+      user.username = username;
+    }
+
+    if (role && req.user) {
       user.role = role;
     }
 
