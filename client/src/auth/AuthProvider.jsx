@@ -4,34 +4,25 @@ import AuthContext from "./AuthContext";
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    try {
+      const decoded = jwtDecode(token);
+      const now = Date.now() / 1000;
 
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        const now = Date.now() / 1000;
-        if (!decoded.exp || decoded.exp < now) {
-          logout();
-          return;
-        } else {
-          setUser(decoded);
-        }
-      } catch (error) {
-        logout();
-      } finally {
-        setLoading(false);
+      if (!decoded.exp || decoded.exp < now) {
+        localStorage.removeItem("token");
+        setUser(null);
+      } else {
+        setUser(decoded);
       }
+    } catch (error) {
+      localStorage.removeItem("token");
+      setUser(null);
+    } finally {
     }
-
-    setLoading(false);
   }, []);
 
   const login = (token) => {
@@ -45,10 +36,8 @@ export default function AuthProvider({ children }) {
     setUser(null);
   };
 
-  if (loading) return null;
-
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

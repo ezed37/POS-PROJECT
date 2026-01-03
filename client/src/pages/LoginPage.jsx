@@ -27,6 +27,7 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../auth/AuthContext";
 import ThemeContext from "../theme/ThemeContext";
+import Loading from "../components/Loading";
 
 export default function LoginPage() {
   const { toggleMode, mode } = useContext(ThemeContext);
@@ -38,6 +39,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   //Themese
   const theme = createTheme({
@@ -63,6 +65,7 @@ export default function LoginPage() {
     }
 
     setError("");
+    setLoginLoading(true);
 
     try {
       const res = await axios.post(
@@ -78,6 +81,8 @@ export default function LoginPage() {
       setError("Invalid Username or Password!");
       console.error({ message: "Invalid username or password!" });
       handleOpen();
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -94,6 +99,10 @@ export default function LoginPage() {
   const handleClose = () => {
     setOpen(false);
   };
+
+  if (loginLoading) {
+    return <Loading />;
+  }
 
   return (
     <Container component="main" maxWidth="xs">
