@@ -688,7 +688,9 @@ function ProductsPage() {
                         {brands.find((b) => b.brand_id === product.brand_id)
                           ?.brand_name || "—"}
                       </TableCell>
-                      <TableCell>{product.stock_qty.toFixed(2)}</TableCell>
+                      <TableCell>
+                        {Number(product.stock_qty || 0).toFixed(2)}
+                      </TableCell>
                       <TableCell>
                         {Number(product.cost_price).toFixed(2)}
                       </TableCell>
