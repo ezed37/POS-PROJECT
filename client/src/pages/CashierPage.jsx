@@ -82,6 +82,7 @@ export default function CashierPage() {
     const found = products.find((p) => p.barcode === search.trim());
     if (!found) {
       setAlerts({ open: true, type: "error", msg: "Product not found!" });
+      setSearch("");
     } else {
       handleAddItem(found);
     }
