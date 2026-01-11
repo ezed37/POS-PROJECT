@@ -32,6 +32,7 @@ import { addSale } from "../api/salesApi";
 import AuthContext from "../auth/AuthContext";
 import { focusSearchInput } from "../services/focusHelper";
 import { useShortcuts } from "../hooks/useShortcuts";
+import AutoLogout from "../hooks/autoLogout";
 
 const STOCK_THRESHOLD = 10;
 
@@ -223,6 +224,9 @@ export default function CashierPage() {
   });
 
   useShortcuts({ ctrl: true, key: "/" }, () => handNewSale());
+
+  //Auto logout when use is inactive
+  AutoLogout();
 
   return (
     <Box
