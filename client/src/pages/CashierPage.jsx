@@ -514,7 +514,7 @@ export default function CashierPage() {
             </Typography>
             <Grid container spacing={2} sx={{ justifyContent: "center" }}>
               {regularProducts.map((p) => (
-                <Grid sx={{ xs: 6, sm: 4 }} key={p._id}>
+                <Grid sx={{ xs: 6, sm: 4, md: 3, lg: 2 }} key={p._id}>
                   <Card
                     variant="outlined"
                     sx={{
@@ -524,17 +524,36 @@ export default function CashierPage() {
                         transform: "translateY(-4px)",
                         boxShadow: 4,
                       },
-                      minWidth: 120,
-                      maxWidth: 120,
-                      minHeight: 75,
-                      maxHeight: 75,
+                      height: { xs: 70, sm: 80, md: 90 },
+                      maxHeight: 50,
+                      maxWidth: 80,
+                      minWidth: 80,
                       bgcolor: "background.paper",
                     }}
                     onClick={() => handleAddItem(p)}
                   >
-                    <CardContent sx={{ py: 1, textAlign: "center" }}>
-                      <Typography fontWeight={500}>{p.product_name}</Typography>
-                      <Typography variant="body2" color="text.secondary">
+                    <CardContent
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        textAlign: "center",
+                        p: 0.5,
+                      }}
+                    >
+                      <Typography
+                        fontSize={{ xs: "0.75rem", sm: "0.85rem" }}
+                        fontWeight={500}
+                        noWrap
+                      >
+                        {p.product_name}
+                      </Typography>
+                      <Typography
+                        fontSize={{ xs: "0.7rem", sm: "0.8rem" }}
+                        color="text.secondary"
+                      >
                         Rs. {p.selling_price}
                       </Typography>
                     </CardContent>
