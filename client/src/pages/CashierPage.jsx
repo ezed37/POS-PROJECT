@@ -23,6 +23,11 @@ import {
   Alert,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import { Html5Qrcode } from "html5-qrcode";
+import { Html5QrcodeSupportedFormats } from "html5-qrcode";
 import Navbar from "../components/NavBar";
 import ThemeContext from "../theme/ThemeContext";
 import { getAllProducts, updateProductBulk } from "../api/productsApi";
@@ -40,6 +45,7 @@ export default function CashierPage() {
   const { toggleMode, mode } = useContext(ThemeContext);
   const { user } = useContext(AuthContext);
   const searchRef = useRef(null);
+  const qrCodeInstance = useRef(null);
 
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
@@ -54,6 +60,7 @@ export default function CashierPage() {
     type: "success",
     msg: "",
   });
+  const [openScanner, setOpenScanner] = useState(false);
 
   const {
     addItem,
@@ -228,6 +235,100 @@ export default function CashierPage() {
   //Auto logout when use is inactive
   AutoLogout();
 
+  //Camera handle
+  const handleCloseScanner = () => {
+    setOpenScanner(false);
+  };
+
+  useEffect(() => {
+    if (!openScanner) return;
+
+    let scanner = null;
+    let scanned = false;
+    let isRunning = false;
+
+    const timeoutId = setTimeout(() => {
+      const element = document.getElementById("qr-reader");
+      if (!element) {
+        console.error("QR reader element not found");
+        setAlerts({
+          open: true,
+          type: "error",
+          msg: "Scanner initialization failed",
+        });
+        handleCloseScanner();
+        return;
+      }
+
+      scanner = new Html5Qrcode("qr-reader");
+      qrCodeInstance.current = scanner;
+
+      scanner
+        .start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            formatsToSupport: [
+              Html5QrcodeSupportedFormats.CODE_128,
+              Html5QrcodeSupportedFormats.EAN_13,
+              Html5QrcodeSupportedFormats.QR_CODE,
+            ],
+          },
+          (decodedText) => {
+            if (scanned) return;
+            scanned = true;
+
+            // Stop scanner and close dialog
+            if (scanner && isRunning) {
+              scanner
+                .stop()
+                .then(() => {
+                  isRunning = false;
+                  scanner.clear();
+                  handleCloseScanner();
+                  setSearch(decodedText);
+                  focusSearchInput(searchRef);
+                })
+                .catch((err) => console.error("Scanner stop error:", err));
+            } else {
+              handleCloseScanner();
+              setSearch("");
+              searchRef.current?.focus();
+            }
+          },
+          (errorMessage) => {
+            // Decode errors - can be ignored
+          }
+        )
+        .then(() => {
+          isRunning = true;
+        })
+        .catch((err) => {
+          console.error("Camera error:", err);
+          setAlerts({
+            open: true,
+            type: "error",
+            msg: "Camera access failed! Make sure you are on localhost or HTTPS",
+          });
+          handleCloseScanner();
+        });
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (scanner && isRunning) {
+        scanner
+          .stop()
+          .then(() => {
+            isRunning = false;
+            scanner.clear();
+          })
+          .catch(() => {});
+      }
+    };
+  }, [openScanner]);
+
   return (
     <Box
       sx={{
@@ -334,6 +435,15 @@ export default function CashierPage() {
                   sx={{
                     flex: 1,
                     "& .MuiOutlinedInput-root": { borderRadius: 1.5 },
+                  }}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => setOpenScanner(true)}>
+                          <CameraAltIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
                   }}
                 />
                 <Button
@@ -564,6 +674,25 @@ export default function CashierPage() {
           </Paper>
         </Grid>
       </Grid>
+
+      <Dialog
+        open={openScanner}
+        onClose={handleCloseScanner}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent sx={{ p: 1 }}>
+          <div
+            id="qr-reader"
+            style={{
+              width: "100%",
+              height: "300px",
+              backgroundColor: "#000",
+              borderRadius: 8,
+            }}
+          />
+        </DialogContent>
+      </Dialog>
 
       <Snackbar
         open={alerts.open}
