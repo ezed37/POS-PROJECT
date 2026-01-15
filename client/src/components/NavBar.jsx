@@ -12,10 +12,13 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import AuthContext from "../auth/AuthContext";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
   const { logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -36,7 +39,7 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
 
   return (
     <>
-      <AppBar position="fixed">
+      <AppBar position="fixed" sx={{ height: isMobile ? 56 : 64 }}>
         <Toolbar>
           {user && user.role === "admin" && (
             <IconButton
@@ -49,20 +52,34 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
               <MenuIcon />
             </IconButton>
           )}
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            POS SYSTEM |{" "}
-            {user.role === "admin" ? "ADMIN PANEL" : "Cashier Panel"}
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            {isMobile
+              ? "TSM POS"
+              : `TSM POS SYSTEM | ${
+                  user.role === "admin" ? "ADMIN PANEL" : "CASHIER PANEL"
+                }`}
           </Typography>
           <IconButton color="inherit" onClick={toggleMode}>
             {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
-          <Switch
-            checked={mode === "dark"}
-            onChange={toggleMode}
-            color="default"
-          />
-          <Avatar alt="User Avatar" sx={{ ml: 2 }} onClick={handleClick}>
-            {user?.username[0]?.toUpperCase() || "NN"}
+
+          {!isMobile && (
+            <Switch
+              checked={mode === "dark"}
+              onChange={toggleMode}
+              color="default"
+            />
+          )}
+          <Avatar
+            sx={{
+              ml: 2,
+              cursor: "pointer",
+              width: isMobile ? 40 : 32,
+              height: isMobile ? 40 : 32,
+            }}
+            onClick={handleClick}
+          >
+            {user?.username?.[0]?.toUpperCase() || "N"}
           </Avatar>
         </Toolbar>
       </AppBar>

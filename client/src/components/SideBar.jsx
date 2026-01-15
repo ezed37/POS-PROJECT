@@ -1,4 +1,3 @@
-import React from "react";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -13,12 +12,11 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import BrandingWatermarkIcon from "@mui/icons-material/BrandingWatermark";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { Link } from "react-router-dom";
-import { Box } from "@mui/material";
 
 const fullWidth = 240;
 const collapsedWidth = 70;
 
-const Sidebar = ({ open }) => {
+const Sidebar = ({ open, setOpen, isMobile }) => {
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
     { text: "Users", icon: <PeopleIcon />, path: "/users" },
@@ -30,16 +28,20 @@ const Sidebar = ({ open }) => {
   ];
 
   return (
-    <Box
+    <Drawer
+      variant={isMobile ? "temporary" : "permanent"}
+      open={open}
+      onClose={() => setOpen(false)}
       sx={{
         width: open ? fullWidth : collapsedWidth,
-        transition: "width 0.3s",
-        overflowX: "hidden",
-        bgcolor: "background.paper",
-        borderRight: "1px solid #ddd",
-        height: "100vh",
-        position: "fixed",
-        mt: 8,
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          width: open ? fullWidth : collapsedWidth,
+          transition: "width 0.3s",
+          overflowX: "hidden",
+          boxSizing: "border-box",
+          mt: 8,
+        },
       }}
     >
       <List>
@@ -61,7 +63,7 @@ const Sidebar = ({ open }) => {
           </ListItem>
         ))}
       </List>
-    </Box>
+    </Drawer>
   );
 };
 

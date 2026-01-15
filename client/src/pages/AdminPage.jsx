@@ -4,7 +4,8 @@ import Box from "@mui/material/Box";
 import Navbar from "../components/NavBar";
 import Sidebar from "../components/SideBar";
 import DashboardPage from "./DashboardPage.jsx";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+import { useTheme, useMediaQuery } from "@mui/material";
 import ThemeContext from "../theme/ThemeContext.jsx";
 import AuthContext from "../auth/AuthContext.jsx";
 import UsersPage from "./UsersPage.jsx";
@@ -21,9 +22,18 @@ export default function AdminPage() {
   const { toggleMode, mode } = useContext(ThemeContext);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  }, [isMobile]);
 
   return (
     <Box
@@ -34,12 +44,20 @@ export default function AdminPage() {
         minHeight: "100vh",
       }}
     >
-      <Sidebar open={sidebarOpen} />
+      <Sidebar
+        open={sidebarOpen}
+        setOpen={setSidebarOpen}
+        isMobile={isMobile}
+      />
       <Box
         sx={{
           flexGrow: 1,
           transition: "margin-left 0.3s",
-          marginLeft: sidebarOpen ? `${drawerWidth}px` : `${collapsedWidth}px`,
+          marginLeft: isMobile
+            ? 0
+            : sidebarOpen
+            ? `${drawerWidth}px`
+            : `${collapsedWidth}px`,
         }}
       >
         <Navbar
