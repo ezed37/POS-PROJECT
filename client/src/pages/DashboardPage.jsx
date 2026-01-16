@@ -159,7 +159,7 @@ const Dashboard = ({ chartData }) => {
     <Box sx={{ minHeight: "100vh", pt: 3, bgcolor: "background.default" }}>
       <Box maxWidth="1200px">
         {/* Header */}
-        <Box mb={8}>
+        <Box mb={5}>
           <Typography
             variant="h3"
             fontWeight="700"
