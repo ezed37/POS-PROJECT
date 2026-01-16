@@ -12,7 +12,7 @@ const router = express.Router();
 
 //User routes
 router.post("/", protect, createSale);
-router.get("/", protect, getAllSales);
+router.get("/", getAllSales);
 
 //Admin routes
 router.get("/:id", protect, authorizeRole("admin"), getSaleById);
