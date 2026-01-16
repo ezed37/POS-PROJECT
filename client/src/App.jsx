@@ -5,6 +5,7 @@ import AuthContext from "./auth/AuthContext";
 import AdminPage from "./pages/AdminPage";
 import CashierPage from "./pages/CashierPage";
 import Loading from "./components/Loading";
+import { OwnerPage } from "./pages/OwnerPage";
 
 function App() {
   const { user, loading } = useContext(AuthContext);
@@ -26,6 +27,8 @@ function App() {
             <AdminPage />
           ) : user.role === "cashier" ? (
             <CashierPage />
+          ) : user.role === "owner" ? (
+            <OwnerPage />
           ) : (
             <Navigate to="/login" replace />
           )

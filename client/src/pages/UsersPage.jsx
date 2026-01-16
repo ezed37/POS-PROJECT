@@ -90,8 +90,8 @@ function UsersPage() {
 
   const filteredUsers = users.filter(
     (u) =>
-      (u.firstName?.toLowerCase() || "").includes(search.toLowerCase()) ||
-      (u.lastName?.toLowerCase() || "").includes(search.toLowerCase())
+      (u?.firstName?.toLowerCase() || "").includes(search.toLowerCase()) ||
+      (u?.lastName?.toLowerCase() || "").includes(search.toLowerCase())
   );
 
   const handleInputChange = (e) => {
@@ -258,6 +258,7 @@ function UsersPage() {
             >
               <MenuItem value="cashier">Cashier</MenuItem>
               <MenuItem value="admin">Admin</MenuItem>
+              <MenuItem value="owner">Owner</MenuItem>
             </TextField>
 
             <TextField
@@ -420,6 +421,7 @@ function UsersPage() {
               >
                 <MenuItem value="cashier">Cashier</MenuItem>
                 <MenuItem value="admin">Admin</MenuItem>
+                <MenuItem value="owner">Owner</MenuItem>
               </TextField>
             </Grid>
 
@@ -633,7 +635,7 @@ function UsersPage() {
               <TableBody>
                 {filteredUsers.map((user) => (
                   <TableRow
-                    key={user._id}
+                    key={user?._id}
                     hover
                     sx={{
                       "&:hover": { backgroundColor: "action.hover" },
@@ -647,20 +649,20 @@ function UsersPage() {
                         <Avatar
                           sx={{
                             bgcolor:
-                              getRoleColor(user.role) === "error"
+                              getRoleColor(user?.role) === "error"
                                 ? "error.main"
                                 : "primary.main",
                             fontWeight: 600,
                           }}
                         >
-                          {getInitials(user.firstName, user.lastName)}
+                          {getInitials(user?.firstName, user?.lastName)}
                         </Avatar>
                         <Box>
                           <Typography variant="body1" fontWeight={600}>
-                            {user.firstName} {user.lastName}
+                            {user?.firstName} {user?.lastName}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            @{user.username || "N/A"}
+                            @{user?.username || "N/A"}
                           </Typography>
                         </Box>
                       </Box>
@@ -670,7 +672,7 @@ function UsersPage() {
                         sx={{ display: "flex", alignItems: "center", gap: 1 }}
                       >
                         <EmailIcon fontSize="small" color="action" />
-                        <Typography variant="body2">{user.email}</Typography>
+                        <Typography variant="body2">{user?.email}</Typography>
                       </Box>
                     </TableCell>
                     <TableCell>
@@ -679,14 +681,14 @@ function UsersPage() {
                       >
                         <PhoneIcon fontSize="small" color="action" />
                         <Typography variant="body2">
-                          {user.phone || "N/A"}
+                          {user?.phone || "N/A"}
                         </Typography>
                       </Box>
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={user.role.toUpperCase()}
-                        color={getRoleColor(user.role)}
+                        label={user?.role?.toUpperCase() || "N/A"}
+                        color={getRoleColor(user?.role)}
                         size="small"
                         sx={{ fontWeight: 600, borderRadius: 1.5 }}
                       />
@@ -710,7 +712,7 @@ function UsersPage() {
                         <IconButton
                           color="error"
                           size="small"
-                          onClick={() => handleDelete(user._id)}
+                          onClick={() => handleDelete(user?._id)}
                           sx={{
                             "&:hover": { backgroundColor: "action.hover" },
                           }}

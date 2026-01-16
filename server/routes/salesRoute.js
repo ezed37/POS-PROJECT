@@ -12,9 +12,9 @@ const router = express.Router();
 
 //User routes
 router.post("/", protect, createSale);
+router.get("/", protect, getAllSales);
 
 //Admin routes
-router.get("/", protect, authorizeRole("admin"), getAllSales);
 router.get("/:id", protect, authorizeRole("admin"), getSaleById);
 router.delete("/:id", protect, authorizeRole("admin"), deleteSale);
 

@@ -56,7 +56,11 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
             {isMobile
               ? "TSM POS"
               : `TSM POS SYSTEM | ${
-                  user.role === "admin" ? "ADMIN PANEL" : "CASHIER PANEL"
+                  user.role === "admin"
+                    ? "ADMIN PANEL"
+                    : user.role === "cashier"
+                    ? "CASHIER PANEL"
+                    : "OWNER PANEL"
                 }`}
           </Typography>
           <IconButton color="inherit" onClick={toggleMode}>
