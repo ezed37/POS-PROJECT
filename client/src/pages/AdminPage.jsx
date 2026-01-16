@@ -14,8 +14,8 @@ import CategoriesPage from "./CategoriesPage.jsx";
 import BrandsPage from "./BrandsPage.jsx";
 import SalesPage from "./SalesPage.jsx";
 
-const drawerWidth = 240;
-const collapsedWidth = 70;
+const drawerWidth = 0;
+const collapsedWidth = 0;
 
 export default function AdminPage() {
   const { user } = useContext(AuthContext);
@@ -65,7 +65,7 @@ export default function AdminPage() {
           toggleMode={toggleMode}
           mode={mode}
         />
-        <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
+        <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
           <Routes>
             {user ? (
               <>
