@@ -7,6 +7,7 @@ import productsRoute from "./routes/productsRoute.js";
 import brandsRoute from "./routes/brandsRoute.js";
 import categoriesRoute from "./routes/categoriesRoute.js";
 import salesRoute from "./routes/salesRoute.js";
+import reportRoutes from "./routes/reportRoute.js";
 
 dotenv.config();
 
@@ -16,12 +17,18 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
+//Health check
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 //Routes
 app.use("/api/users", usersRoute);
 app.use("/api/products", productsRoute);
 app.use("/api/brands", brandsRoute);
 app.use("/api/categories", categoriesRoute);
 app.use("/api/sales", salesRoute);
+app.use("/api/reports", reportRoutes);
 
 //Root route
 app.get("/", (req, res) => {
