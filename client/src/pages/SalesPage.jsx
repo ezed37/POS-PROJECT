@@ -96,7 +96,7 @@ export default function SalesPage() {
 
   //Find qty of product each sale
   const totalQty = saleData.map((sale) =>
-    sale.items.reduce((sum, item) => sum + item.qty, 0)
+    sale.items.reduce((sum, item) => sum + item.qty, 0),
   );
 
   //Handle page change

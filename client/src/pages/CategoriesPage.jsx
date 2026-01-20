@@ -123,7 +123,7 @@ export default function CategoriesPage() {
     try {
       await updateCategory(editCategory._id, editCategory);
       setCategory((prev) =>
-        prev.map((p) => (p._id === editCategory._id ? editCategory : p))
+        prev.map((p) => (p._id === editCategory._id ? editCategory : p)),
       );
       setAlerts({
         open: true,
