@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { NotoSansSinhala } from "../../utils/sinhalaFont";
 import { getAllSales } from "../../api/salesApi";
 import {
   Box,
@@ -70,9 +71,9 @@ export default function DailyReport() {
           totalQty: 0,
           costPrice: item.cost_price,
           sellPrice: item.selling_price,
-          revPerProd: (item.selling_price - item.cost_price).toFixed(2),
-          totCost: (item.cost_price * item.qty).toFixed(2),
-          totSell: (item.selling_price * item.qty).toFixed(2),
+          revPerProd: item.selling_price - item.cost_price,
+          totCost: item.cost_price * item.qty,
+          totSell: item.selling_price * item.qty,
           totRev: (item.selling_price - item.cost_price) * item.qty,
         };
       }
@@ -82,6 +83,16 @@ export default function DailyReport() {
 
   const subRevenue = Object.values(dayItemSummery).reduce(
     (sum, item) => sum + item.totRev,
+    0,
+  );
+
+  const subSell = Object.values(dayItemSummery).reduce(
+    (sum, item) => sum + item.totSell,
+    0,
+  );
+
+  const subCost = Object.values(dayItemSummery).reduce(
+    (sum, item) => sum + item.totCost,
     0,
   );
 
@@ -95,8 +106,13 @@ export default function DailyReport() {
 
     const doc = new jsPDF();
 
+    doc.addFileToVFS("NotoSansSinhala.ttf", NotoSansSinhala);
+    doc.addFont("NotoSansSinhala.ttf", "NotoSinhala", "normal");
+    doc.setFont("NotoSinhala");
+
     doc.setFontSize(14);
-    doc.text(`Daily Sales Report - ${formattedDate}`, 14, 15);
+    doc.text("Tharindi Super Mart | 0770072803", 14, 15);
+    doc.text(`Daily Sales Report - ${formattedDate}`, 14, 25);
 
     const tableColumn = [
       "No",
@@ -121,17 +137,32 @@ export default function DailyReport() {
         item.totCost,
         item.totSell,
         item.totRev.toFixed(2),
+        item.totRev.toFixed(2),
+        item.totRev.toFixed(2),
       ]);
     });
 
-    tableRows.push(["", "", "", "", "", "", "Total", subRevenue.toFixed(2)]);
+    tableRows.push([
+      "",
+      "",
+      "",
+      "",
+      "Total",
+      subCost.toFixed(2),
+      subSell.toFixed(2),
+      subRevenue.toFixed(2),
+    ]);
 
     autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
-      startY: 20,
-      styles: { fontSize: 9 },
-      headStyles: { fillColor: [22, 160, 133] },
+      startY: 35,
+      styles: { font: "NotoSinhala", fontStyle: "normal", fontSize: 9 },
+      headStyles: {
+        fillColor: [22, 160, 133],
+        textColor: 255,
+        halign: "center",
+      },
     });
 
     doc.save(`daily_sales_report_${formattedDate}.pdf`);
@@ -180,15 +211,16 @@ export default function DailyReport() {
               >
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{item.productName}</TableCell>
-                <TableCell>{item.costPrice}</TableCell>
-                <TableCell>{item.sellPrice}</TableCell>
-                <TableCell>{item.totalQty}</TableCell>
-                <TableCell>{item.totCost}</TableCell>
-                <TableCell>{item.totSell}</TableCell>
+                <TableCell align="right">{item.costPrice.toFixed(1)}</TableCell>
+                <TableCell align="right">{item.sellPrice.toFixed(1)}</TableCell>
+                <TableCell align="center">{item.totalQty.toFixed(1)}</TableCell>
+                <TableCell align="right">{item.totCost.toFixed(1)}</TableCell>
+                <TableCell align="right">{item.totSell.toFixed(1)}</TableCell>
                 <TableCell
                   sx={{ fontWeight: 600, color: theme.palette.primary.main }}
+                  align="right"
                 >
-                  {item.totRev.toFixed(2)}
+                  {item.totRev.toFixed(1)}
                 </TableCell>
               </TableRow>
             ))}
@@ -198,10 +230,25 @@ export default function DailyReport() {
                 backgroundColor: theme.palette.action.selected,
               }}
             >
-              <TableCell colSpan={7} align="right" sx={{ fontWeight: 700 }}>
-                Total Revenue Today
+              <TableCell colSpan={5} align="right" sx={{ fontWeight: 700 }}>
+                Total Today
               </TableCell>
-              <TableCell sx={{ fontWeight: 800, fontSize: "1rem" }}>
+              <TableCell
+                sx={{ fontWeight: 800, fontSize: "1rem" }}
+                align="right"
+              >
+                {subCost.toFixed(2) || 0}
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: 800, fontSize: "1rem" }}
+                align="right"
+              >
+                {subSell.toFixed(2) || 0}
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: 800, fontSize: "1rem" }}
+                align="right"
+              >
                 {subRevenue.toFixed(2) || 0}
               </TableCell>
             </TableRow>
