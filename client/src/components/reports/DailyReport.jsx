@@ -66,18 +66,22 @@ export default function DailyReport() {
 
       if (!dayItemSummery[productId]) {
         dayItemSummery[productId] = {
-          productId: productId,
+          productId,
           productName: item.product_name,
           totalQty: 0,
           costPrice: item.cost_price,
           sellPrice: item.selling_price,
-          revPerProd: item.selling_price - item.cost_price,
-          totCost: item.cost_price * item.qty,
-          totSell: item.selling_price * item.qty,
-          totRev: (item.selling_price - item.cost_price) * item.qty,
+          totCost: 0,
+          totSell: 0,
+          totRev: 0,
         };
       }
+
       dayItemSummery[productId].totalQty += item.qty;
+      dayItemSummery[productId].totCost += item.cost_price * item.qty;
+      dayItemSummery[productId].totSell += item.selling_price * item.qty;
+      dayItemSummery[productId].totRev +=
+        (item.selling_price - item.cost_price) * item.qty;
     });
   });
 
@@ -134,10 +138,8 @@ export default function DailyReport() {
         item.costPrice,
         item.sellPrice,
         item.totalQty,
-        item.totCost,
-        item.totSell,
-        item.totRev.toFixed(2),
-        item.totRev.toFixed(2),
+        item.totCost.toFixed(2),
+        item.totSell.toFixed(2),
         item.totRev.toFixed(2),
       ]);
     });
