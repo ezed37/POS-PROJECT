@@ -27,9 +27,6 @@ const columns = [
   { id: "rev_item", label: "Rev. Per Item (Rs)" },
 ];
 
-const toTwoDecimals = (value) =>
-  Number(Math.round(value * 100) / 100).toFixed(2);
-
 export default function MonthlyReport() {
   const theme = useTheme();
 
@@ -140,6 +137,9 @@ export default function MonthlyReport() {
     ];
 
     const tableRows = [];
+
+    const toTwoDecimals = (value) =>
+      Number(Math.round(value * 100) / 100).toFixed(2);
 
     monthItemSummeryArray.forEach((item, index) => {
       tableRows.push([
