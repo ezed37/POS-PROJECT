@@ -137,7 +137,7 @@ export default function DailyReport() {
         item.productName,
         item.costPrice,
         item.sellPrice,
-        item.totalQty,
+        item.totalQty.toFixed(2),
         item.totCost.toFixed(2),
         item.totSell.toFixed(2),
         item.totRev.toFixed(2),
