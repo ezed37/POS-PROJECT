@@ -27,6 +27,9 @@ const d_columns = [
   { id: "rev_item", label: "Rev. Per Item (Rs)" },
 ];
 
+const toTwoDecimals = (value) =>
+  Number(Math.round(value * 100) / 100).toFixed(2);
+
 export default function DailyReport() {
   const theme = useTheme();
 
@@ -135,12 +138,12 @@ export default function DailyReport() {
       tableRows.push([
         index + 1,
         item.productName,
-        item.costPrice,
-        item.sellPrice,
-        item.totalQty.toFixed(2),
-        item.totCost.toFixed(2),
-        item.totSell.toFixed(2),
-        item.totRev.toFixed(2),
+        toTwoDecimals(item.costPrice),
+        toTwoDecimals(item.sellPrice),
+        toTwoDecimals(item.totalQty),
+        toTwoDecimals(item.totCost),
+        toTwoDecimals(item.totSell),
+        toTwoDecimals(item.totRev),
       ]);
     });
 
