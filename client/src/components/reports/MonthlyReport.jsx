@@ -27,6 +27,9 @@ const columns = [
   { id: "rev_item", label: "Rev. Per Item (Rs)" },
 ];
 
+const toTwoDecimals = (value) =>
+  Number(Math.round(value * 100) / 100).toFixed(2);
+
 export default function MonthlyReport() {
   const theme = useTheme();
 
