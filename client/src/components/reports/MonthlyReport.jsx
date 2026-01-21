@@ -14,6 +14,7 @@ import autoTable from "jspdf-autotable";
 import React, { useEffect, useState } from "react";
 import { getAllSales } from "../../api/salesApi";
 import { NotoSansSinhala } from "../../utils/sinhalaFont";
+import * as XLSX from "xlsx";
 
 //Columns for Monthly Sales Report Table
 const columns = [
@@ -180,6 +181,49 @@ export default function MonthlyReport() {
     doc.save(`monthly_sales_report_${formattedMonth}.pdf`);
   };
 
+  //Export excel file
+  const exportToExcel = () => {
+    const today = new Date();
+    const formattedMonth = today.toLocaleString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+
+    //Prepare data for Excel
+    const excelData = monthItemSummeryArray.map((item, index) => ({
+      No: index + 1,
+      "Item Name": item.productName,
+      "Unit Cost (Rs)": toTwoDecimals(item.costPrice),
+      "Unit Sell (Rs)": toTwoDecimals(item.sellPrice),
+      "Sold Units": toTwoDecimals(item.totalQty),
+      "Total Cost (Rs)": toTwoDecimals(item.totCost),
+      "Total Sell (Rs)": toTwoDecimals(item.totSell),
+      "Revenue (Rs)": toTwoDecimals(item.totRev),
+    }));
+
+    //Add total row
+    excelData.push({
+      No: "",
+      "Item Name": "TOTAL",
+      "Unit Cost (Rs)": "",
+      "Unit Sell (Rs)": "",
+      "Sold Units": "",
+      "Total Cost (Rs)": subCost.toFixed(2),
+      "Total Sell (Rs)": subSell.toFixed(2),
+      "Revenue (Rs)": subRevenue.toFixed(2),
+    });
+
+    //Create worksheet
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    //Create workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Monthly Sales");
+
+    //Download Excel file
+    XLSX.writeFile(workbook, `monthly_sales_report_${formattedMonth}.xlsx`);
+  };
+
   return (
     <Box
       sx={{
@@ -269,6 +313,7 @@ export default function MonthlyReport() {
       </TableContainer>
       <Box sx={{ pt: 2, mb: 2, textAlign: "right" }}>
         <Button onClick={exportToPDF}>Export to PDF</Button>
+        <Button onClick={exportToExcel}>Export to Excel</Button>
       </Box>
     </Box>
   );
