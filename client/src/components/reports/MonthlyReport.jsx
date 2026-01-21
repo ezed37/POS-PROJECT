@@ -144,7 +144,7 @@ export default function MonthlyReport() {
         item.productName,
         item.costPrice,
         item.sellPrice,
-        item.totalQty,
+        item.totalQty.toFixed(2),
         item.totCost.toFixed(2),
         item.totSell.toFixed(2),
         item.totRev.toFixed(2),
