@@ -12,6 +12,7 @@ import AssessmentIcon from "@mui/icons-material/Assessment";
 import BrandingWatermarkIcon from "@mui/icons-material/BrandingWatermark";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { Link } from "react-router-dom";
+import { Toolbar } from "@mui/material";
 
 const fullWidth = 240;
 const collapsedWidth = 70;
@@ -33,20 +34,20 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
       open={open}
       onClose={() => setOpen(false)}
       sx={{
-        width: open ? fullWidth : collapsedWidth,
+        width: isMobile ? fullWidth : open ? fullWidth : collapsedWidth,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: open ? fullWidth : collapsedWidth,
+          width: isMobile ? fullWidth : open ? fullWidth : collapsedWidth,
           transition: "width 0.3s",
           overflowX: "hidden",
           boxSizing: "border-box",
-          mt: 8,
         },
       }}
     >
+      <Toolbar />
       <List>
         {menuItems.map((item) => (
-          <ListItem key={item.text}>
+          <ListItem key={item.text} disablePadding>
             <ListItemButton
               component={Link}
               to={item.path}
@@ -55,7 +56,13 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
                 justifyContent: open ? "initial" : "center",
               }}
             >
-              <ListItemIcon sx={{ minWidth: 40, minHeight: 40, pl: 2 }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 40,
+                  justifyContent: "center",
+                  pl: open ? 2 : 0,
+                }}
+              >
                 {item.icon}
               </ListItemIcon>
               {open && <ListItemText primary={item.text} />}

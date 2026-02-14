@@ -18,7 +18,7 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
   const { logout, user } = useContext(AuthContext);
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -39,7 +39,11 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
 
   return (
     <>
-      <AppBar position="fixed" sx={{ height: isMobile ? 56 : 64 }}>
+      <AppBar
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+      >
         <Toolbar>
           {user && user.role === "admin" && (
             <IconButton
@@ -52,15 +56,24 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
               <MenuIcon />
             </IconButton>
           )}
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              flexGrow: 1,
+              fontSize: { xs: "1rem", md: "1.25rem" },
+              whiteSpace: "nowrap",
+              overflow: "auto",
+              textOverflow: "ellipsis",
+            }}
+          >
             {isMobile
               ? "TSM POS"
               : `TSM POS SYSTEM | ${
                   user.role === "admin"
                     ? "ADMIN PANEL"
                     : user.role === "cashier"
-                    ? "CASHIER PANEL"
-                    : "OWNER PANEL"
+                      ? "CASHIER PANEL"
+                      : "OWNER PANEL"
                 }`}
           </Typography>
           <IconButton color="inherit" onClick={toggleMode}>
@@ -78,8 +91,8 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
             sx={{
               ml: 2,
               cursor: "pointer",
-              width: isMobile ? 40 : 32,
-              height: isMobile ? 40 : 32,
+              width: { xs: 32, md: 40 },
+              height: { xs: 32, md: 40 },
             }}
             onClick={handleClick}
           >
@@ -87,6 +100,8 @@ const Navbar = ({ toggleSidebar, toggleMode, mode }) => {
           </Avatar>
         </Toolbar>
       </AppBar>
+
+      <Toolbar />
 
       <Menu
         anchorEl={anchorEl}

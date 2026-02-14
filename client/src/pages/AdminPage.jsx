@@ -15,16 +15,13 @@ import BrandsPage from "./BrandsPage.jsx";
 import SalesPage from "./SalesPage.jsx";
 import ReportPage from "./ReportPage.jsx";
 
-const drawerWidth = 0;
-const collapsedWidth = 0;
-
 export default function AdminPage() {
   const { user } = useContext(AuthContext);
   const { toggleMode, mode } = useContext(ThemeContext);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
@@ -37,14 +34,7 @@ export default function AdminPage() {
   }, [isMobile]);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        bgcolor: "background.default",
-        color: "text.primary",
-        minHeight: "100vh",
-      }}
-    >
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar
         open={sidebarOpen}
         setOpen={setSidebarOpen}
@@ -53,12 +43,8 @@ export default function AdminPage() {
       <Box
         sx={{
           flexGrow: 1,
-          transition: "margin-left 0.3s",
-          marginLeft: isMobile
-            ? 0
-            : sidebarOpen
-            ? `${drawerWidth}px`
-            : `${collapsedWidth}px`,
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <Navbar
@@ -66,7 +52,8 @@ export default function AdminPage() {
           toggleMode={toggleMode}
           mode={mode}
         />
-        <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 4 }}>
+
+        <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 3 } }}>
           <Routes>
             {user ? (
               <>
