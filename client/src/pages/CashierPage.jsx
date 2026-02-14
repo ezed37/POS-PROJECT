@@ -101,13 +101,11 @@ export default function CashierPage() {
       setDialogItem(product);
       setDialogQty(0);
       setAddItemDialog(true);
-    } else if (product.stock_qty > 0) {
+    } else {
       setAlerts({ open: true, type: "warning", msg: "Low stock!" });
       setDialogItem(product);
       setDialogQty(0);
       setAddItemDialog(true);
-    } else {
-      setAlerts({ open: true, type: "error", msg: "Insufficient stock!" });
     }
   };
 
@@ -299,7 +297,7 @@ export default function CashierPage() {
           },
           (errorMessage) => {
             // Decode errors - can be ignored
-          }
+          },
         )
         .then(() => {
           isRunning = true;
@@ -636,8 +634,7 @@ export default function CashierPage() {
                       },
                       height: { xs: 70, sm: 80, md: 90 },
                       maxHeight: 50,
-                      maxWidth: 80,
-                      minWidth: 80,
+                      minWidth: 90,
                       bgcolor: "background.paper",
                     }}
                     onClick={() => handleAddItem(p)}
