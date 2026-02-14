@@ -397,15 +397,23 @@ export default function CashierPage() {
         spacing={3}
         sx={{
           maxWidth: 1400,
+          mx: "auto",
           minHeight: "80vh",
           px: { xs: 2, md: 3 },
           py: 3,
           mt: 8,
-          ml: 10,
+          ml: { lg: 10 },
         }}
       >
         {/* Cart Column */}
-        <Grid sx={{ minWidth: 800, xs: 12, lg: 8 }}>
+        <Grid
+          item
+          xs={12}
+          lg={8}
+          sx={{
+            minWidth: { xs: "100%", lg: 800 },
+          }}
+        >
           <Paper
             elevation={3}
             sx={{
@@ -459,7 +467,12 @@ export default function CashierPage() {
                 </Button>
               </Box>
 
-              <TableContainer sx={{ flex: 1, maxHeight: 400 }}>
+              <TableContainer
+                sx={{
+                  flex: 1,
+                  maxHeight: { xs: "40vh", md: 400 },
+                }}
+              >
                 <Table stickyHeader size="small">
                   <TableHead>
                     <TableRow>
@@ -615,14 +628,14 @@ export default function CashierPage() {
         </Grid>
 
         {/* Regular Items Column */}
-        <Grid sx={{ maxWidth: 500, xs: 12, lg: 4 }}>
+        <Grid item xs={12} lg={4} sx={{ maxWidth: 500 }}>
           <Paper elevation={3} sx={{ borderRadius: 3, p: 3 }}>
             <Typography variant="h5" fontWeight={600} sx={{ mb: 3 }}>
               Regular Items
             </Typography>
             <Grid container spacing={2} sx={{ justifyContent: "center" }}>
               {regularProducts.map((p) => (
-                <Grid sx={{ xs: 6, sm: 4, md: 3, lg: 2 }} key={p._id}>
+                <Grid item xs={6} sm={4} md={3} lg={2} key={p._id}>
                   <Card
                     variant="outlined"
                     sx={{
@@ -632,7 +645,6 @@ export default function CashierPage() {
                         transform: "translateY(-4px)",
                         boxShadow: 4,
                       },
-                      height: { xs: 70, sm: 80, md: 90 },
                       maxHeight: 50,
                       minWidth: 90,
                       bgcolor: "background.paper",
@@ -683,7 +695,7 @@ export default function CashierPage() {
             id="qr-reader"
             style={{
               width: "100%",
-              height: "300px",
+              height: { xs: 250, sm: 300 },
               backgroundColor: "#000",
               borderRadius: 8,
             }}
