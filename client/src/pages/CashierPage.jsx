@@ -401,7 +401,6 @@ export default function CashierPage() {
           minHeight: "80vh",
           px: { xs: 2, md: 3 },
           py: 3,
-          mt: 8,
           ml: { lg: 10 },
         }}
       >
