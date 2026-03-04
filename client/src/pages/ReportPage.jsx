@@ -4,6 +4,7 @@ import React from "react";
 import DailyReport from "../components/reports/DailyReport";
 import MonthlyReport from "../components/reports/MonthlyReport";
 import OtherReport from "../components/reports/OtherReport";
+import LastMonthReport from "../components/reports/LastMonthReport";
 
 export default function ReportPage() {
   const [value, setValue] = React.useState("dailysales");
@@ -59,6 +60,7 @@ export default function ReportPage() {
         >
           <Tab value="dailysales" label="Daily Sales" />
           <Tab value="monthlysales" label="Monthly Sales" />
+          <Tab value="lastmonthsales" label="Last Monthly Sales" />
           <Tab value="other" label="Other Reports" />
         </Tabs>
 
@@ -66,6 +68,7 @@ export default function ReportPage() {
         <Box>
           {value === "dailysales" && <DailyReport />}
           {value === "monthlysales" && <MonthlyReport />}
+          {value === "lastmonthsales" && <LastMonthReport />}
           {value === "other" && <OtherReport />}
         </Box>
       </Paper>
