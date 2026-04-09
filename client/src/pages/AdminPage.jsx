@@ -14,6 +14,7 @@ import CategoriesPage from "./CategoriesPage.jsx";
 import BrandsPage from "./BrandsPage.jsx";
 import SalesPage from "./SalesPage.jsx";
 import ReportPage from "./ReportPage.jsx";
+import CustomerPage from "./CustomerPage.jsx";
 
 export default function AdminPage() {
   const { user } = useContext(AuthContext);
@@ -64,6 +65,7 @@ export default function AdminPage() {
                 <Route path="/brands" element={<BrandsPage />} />
                 <Route path="/sales" element={<SalesPage />} />
                 <Route path="/reports" element={<ReportPage />} />
+                <Route path="/customers" element={<CustomerPage />} />
               </>
             ) : (
               <Route path="/*" element={<Login />} />

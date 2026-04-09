@@ -122,7 +122,7 @@ export default function BrandsPage() {
     try {
       await updateBrand(editBrand._id, editBrand);
       setBrand((prev) =>
-        prev.map((p) => (p._id === editBrand._id ? editBrand : p))
+        prev.map((p) => (p._id === editBrand._id ? editBrand : p)),
       );
       setAlerts({
         open: true,

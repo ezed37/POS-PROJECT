@@ -7,6 +7,7 @@ import productsRoute from "./routes/productsRoute.js";
 import brandsRoute from "./routes/brandsRoute.js";
 import categoriesRoute from "./routes/categoriesRoute.js";
 import salesRoute from "./routes/salesRoute.js";
+import customerRoute from "./routes/customersRoute.js";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use("/api/products", productsRoute);
 app.use("/api/brands", brandsRoute);
 app.use("/api/categories", categoriesRoute);
 app.use("/api/sales", salesRoute);
+app.use("/api/customers", customerRoute);
 
 //Root route
 app.get("/", (req, res) => {

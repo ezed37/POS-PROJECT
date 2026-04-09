@@ -11,6 +11,7 @@ import CategoryIcon from "@mui/icons-material/Category";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BrandingWatermarkIcon from "@mui/icons-material/BrandingWatermark";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import { Link } from "react-router-dom";
 import { Toolbar } from "@mui/material";
 
@@ -26,6 +27,7 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
     { text: "Brands", icon: <BrandingWatermarkIcon />, path: "/brands" },
     { text: "Sales", icon: <AttachMoneyIcon />, path: "/sales" },
     { text: "Reports", icon: <AssessmentIcon />, path: "/reports" },
+    { text: "Customers", icon: <EmojiPeopleIcon />, path: "/customers" },
   ];
 
   return (
