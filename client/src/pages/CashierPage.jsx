@@ -21,6 +21,7 @@ import {
   DialogActions,
   Snackbar,
   Alert,
+  MenuItem,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -31,6 +32,7 @@ import { Html5QrcodeSupportedFormats } from "html5-qrcode";
 import Navbar from "../components/NavBar";
 import ThemeContext from "../theme/ThemeContext";
 import { getAllProducts, updateProductBulk } from "../api/productsApi";
+import { getAllCustomers, updateCustomer } from "../api/customersApi";
 import useCart from "../hooks/useCart";
 import { printReceipt } from "../utils/receiptPrinters";
 import { addSale } from "../api/salesApi";
@@ -61,6 +63,10 @@ export default function CashierPage() {
     msg: "",
   });
   const [openScanner, setOpenScanner] = useState(false);
+  const [customer, setCustomer] = useState([]);
+  const [newCustomer, setNewCustomer] = useState({
+    customer_name: "N/A",
+  });
 
   const {
     addItem,
@@ -81,7 +87,14 @@ export default function CashierPage() {
       const res = await getAllProducts();
       setProducts(res.data || []);
     };
+
+    const fetchCustomers = async () => {
+      const res = await getAllCustomers();
+      setCustomer(res.data || []);
+    };
+
     fetchProducts();
+    fetchCustomers();
   }, []);
 
   const regularProducts = products.filter((p) => p.regular_item);
@@ -133,7 +146,11 @@ export default function CashierPage() {
   };
   const completeSale = () => setCompleteSaleDialog(true);
 
-  const finishSale = () => {
+  //TEST
+  console.log(newCustomer);
+  console.log(finalTotal);
+
+  const finishSale = async () => {
     const cash = Number(customerCash);
     if (isNaN(cash) || cash < finalTotal) {
       setAlerts({
@@ -146,7 +163,10 @@ export default function CashierPage() {
     const bal = cash - finalTotal;
     setBalance(bal);
 
-    handleSaleData();
+    await handleSaleData();
+    handleUpdateStock();
+    await handleUpdateCustomer(finalTotal);
+
     setTimeout(() => {
       printReceipt({
         cart: [...cart],
@@ -157,7 +177,7 @@ export default function CashierPage() {
         balance: bal,
         customerTotalProfit,
       });
-      handleUpdateStock();
+
       clearCart();
       setDiscount(0);
       setCustomerCash("");
@@ -165,7 +185,41 @@ export default function CashierPage() {
       setSearch("");
       focusSearchInput(searchRef);
       setCompleteSaleDialog(false);
+      setNewCustomer({ customer_name: "N/A" });
     }, 500);
+  };
+
+  const handleUpdateCustomer = async (amount) => {
+    if (newCustomer.customer_name === "N/A") return;
+
+    const selectedCustomer = customer.find(
+      (cus) => cus.customer_name === newCustomer.customer_name,
+    );
+
+    if (!selectedCustomer) return;
+
+    const updatedPurchaseCost = (selectedCustomer.purchase_cost || 0) + amount;
+
+    try {
+      await updateCustomer(selectedCustomer._id, {
+        purchase_cost: updatedPurchaseCost,
+      });
+      // Optionally update local state
+      setCustomer((prev) =>
+        prev.map((cus) =>
+          cus._id === selectedCustomer._id
+            ? { ...cus, purchase_cost: updatedPurchaseCost }
+            : cus,
+        ),
+      );
+    } catch (err) {
+      console.error("Failed to update customer purchase cost:", err);
+      setAlerts({
+        open: true,
+        type: "error",
+        msg: "Failed to update customer purchase record",
+      });
+    }
   };
 
   const handleUpdateStock = async () => {
@@ -363,13 +417,35 @@ export default function CashierPage() {
         open={completeSaleDialog}
         onClose={() => setCompleteSaleDialog(false)}
       >
-        <DialogTitle>Complete Payment</DialogTitle>
+        <DialogTitle fontWeight={"bold"}>Complete Payment</DialogTitle>
         <DialogContent>
+          <TextField
+            autoFocus
+            sx={{ marginTop: 2, pb: 2 }}
+            fullWidth
+            select
+            label="Customer Name"
+            name="regular_item"
+            value={newCustomer.customer_name}
+            onChange={(e) =>
+              setNewCustomer({
+                ...newCustomer,
+                customer_name: e.target.value,
+              })
+            }
+          >
+            <MenuItem value="N/A">N/A</MenuItem>
+
+            {customer.map((cus) => (
+              <MenuItem key={cus._id} value={cus.customer_name}>
+                {cus.customer_name}
+              </MenuItem>
+            ))}
+          </TextField>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Total Payable: Rs. {finalTotal}
           </Typography>
           <TextField
-            autoFocus
             label="Cash from the customer"
             fullWidth
             type="number"

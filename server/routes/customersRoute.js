@@ -13,11 +13,11 @@ const router = express.Router();
 
 //Protected routes
 router.get("/", protect, getCustomer);
-router.post("/", protect, createCustomer);
+router.put("/:id", protect, updateCustomer);
 
 //Protect + Admin Routes
 router.get("/:id", protect, authorizeRole("admin"), getCustomerById);
-router.put("/:id", protect, authorizeRole("admin"), updateCustomer);
+router.post("/", protect, authorizeRole("admin"), createCustomer);
 router.delete("/:id", protect, authorizeRole("admin"), deleteCustomer);
 
 export default router;
