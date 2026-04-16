@@ -118,14 +118,7 @@ export default function CashierPage() {
   const regularProducts = products.filter((p) => p.regular_item);
 
   const handleFormInput = () => {
-    const productMap = useMemo(() => {
-      const map = new Map();
-      products.forEach((p) => map.set(p.barcode, p));
-      return map;
-    }, [products]);
-
-    const found = productMap.get(search.trim());
-
+    const found = products.find((p) => p.barcode === search.trim());
     if (!found) {
       setAlerts({ open: true, type: "error", msg: "Product not found!" });
       setSearch("");
