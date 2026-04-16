@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -84,13 +84,31 @@ export default function CashierPage() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const res = await getAllProducts();
-      setProducts(res.data || []);
+      try {
+        const res = await getAllProducts();
+        setProducts(res.data || []);
+      } catch (err) {
+        console.error(err);
+        setAlerts({
+          open: true,
+          type: "error",
+          msg: "Failed to load products",
+        });
+      }
     };
 
     const fetchCustomers = async () => {
-      const res = await getAllCustomers();
-      setCustomer(res.data || []);
+      try {
+        const res = await getAllCustomers();
+        setCustomer(res.data || []);
+      } catch (err) {
+        console.error(err);
+        setAlerts({
+          open: true,
+          type: "error",
+          msg: "Failed to load Customers",
+        });
+      }
     };
 
     fetchProducts();
@@ -100,7 +118,14 @@ export default function CashierPage() {
   const regularProducts = products.filter((p) => p.regular_item);
 
   const handleFormInput = () => {
-    const found = products.find((p) => p.barcode === search.trim());
+    const productMap = useMemo(() => {
+      const map = new Map();
+      products.forEach((p) => map.set(p.barcode, p));
+      return map;
+    }, [products]);
+
+    const found = productMap.get(search.trim());
+
     if (!found) {
       setAlerts({ open: true, type: "error", msg: "Product not found!" });
       setSearch("");
@@ -146,10 +171,6 @@ export default function CashierPage() {
   };
   const completeSale = () => setCompleteSaleDialog(true);
 
-  //TEST
-  console.log(newCustomer);
-  console.log(finalTotal);
-
   const finishSale = async () => {
     const cash = Number(customerCash);
     if (isNaN(cash) || cash < finalTotal) {
@@ -163,9 +184,11 @@ export default function CashierPage() {
     const bal = cash - finalTotal;
     setBalance(bal);
 
-    await handleSaleData();
-    handleUpdateStock();
-    await handleUpdateCustomer(finalTotal);
+    await Promise.all([
+      handleSaleData(),
+      handleUpdateStock(),
+      handleUpdateCustomer(finalTotal),
+    ]);
 
     setTimeout(() => {
       printReceipt({
