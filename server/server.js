@@ -25,8 +25,6 @@ app.get("/health", (req, res) => {
 //Routes
 app.use("/api/users", usersRoute);
 app.use("/api/products", productsRoute);
-app.use("/api/brands", brandsRoute);
-app.use("/api/categories", categoriesRoute);
 app.use("/api/sales", salesRoute);
 app.use("/api/customers", customerRoute);
 
