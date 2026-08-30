@@ -149,11 +149,16 @@ function ProductsPage() {
   };
 
   const handleUpdateSubmit = async () => {
+    const updatedProduct = {
+      ...editProduct,
+      stock_qty: Number(Number(editProduct.stock_qty).toFixed(2)),
+    };
+
     if (
-      !editProduct.product_name ||
-      editProduct.cost_price <= 0 ||
-      editProduct.actual_price <= 0 ||
-      editProduct.selling_price <= 0
+      !updatedProduct.product_name ||
+      updatedProduct.cost_price <= 0 ||
+      updatedProduct.actual_price <= 0 ||
+      updatedProduct.selling_price <= 0
     ) {
       setAlerts({
         open: true,
@@ -162,16 +167,20 @@ function ProductsPage() {
       });
       return;
     }
+
     try {
-      await updateProduct(editProduct._id, editProduct);
+      await updateProduct(updatedProduct._id, updatedProduct);
+
       setProducts((prev) =>
-        prev.map((p) => (p._id === editProduct._id ? editProduct : p)),
+        prev.map((p) => (p._id === updatedProduct._id ? updatedProduct : p)),
       );
+
       setAlerts({
         open: true,
         type: "success",
         msg: "Product Updated successfully!",
       });
+
       setUpdateDialogOpen(false);
     } catch (err) {
       console.error(err);
@@ -396,11 +405,11 @@ function ProductsPage() {
               <TextField
                 fullWidth
                 label="Stock Qty"
-                value={editProduct.stock_qty.toFixed(2)}
+                value={Number(editProduct.stock_qty || 0).toFixed(2)}
                 onChange={(e) =>
                   setEditProduct({
                     ...editProduct,
-                    stock_qty: e.target.value,
+                    stock_qty: Number(e.target.value),
                   })
                 }
               />
