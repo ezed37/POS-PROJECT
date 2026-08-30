@@ -18,13 +18,11 @@ const productSchema = new mongoose.Schema(
     category_id: {
       type: String,
       ref: "category",
-      required: true,
       uppercase: true,
     },
     brand_id: {
       type: String,
       ref: "brand",
-      required: true,
       uppercase: true,
     },
     regular_item: {
@@ -33,7 +31,6 @@ const productSchema = new mongoose.Schema(
     },
     unit: {
       type: String,
-      required: true,
       enum: ["pkt", "weight", "length"],
       lowercase: true,
     },
@@ -58,7 +55,7 @@ const productSchema = new mongoose.Schema(
       min: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Product = mongoose.model("products", productSchema);

@@ -83,7 +83,7 @@ function ProductsPage() {
     .filter(
       (p) =>
         p.product_name?.toLowerCase().includes(search.toLowerCase()) ||
-        p.barcode?.toLowerCase().includes(search.toLowerCase())
+        p.barcode?.toLowerCase().includes(search.toLowerCase()),
     )
     .sort((a, b) => {
       const field = sortConfig.field;
@@ -190,7 +190,7 @@ function ProductsPage() {
     try {
       await updateProduct(editProduct._id, editProduct);
       setProducts((prev) =>
-        prev.map((p) => (p._id === editProduct._id ? editProduct : p))
+        prev.map((p) => (p._id === editProduct._id ? editProduct : p)),
       );
       setAlerts({
         open: true,
@@ -246,7 +246,6 @@ function ProductsPage() {
           <Grid container spacing={2} sx={{ pt: 1 }}>
             <Grid sx={{ minWidth: 230 }}>
               <TextField
-                //inputRef={searchInputRef}
                 fullWidth
                 label="Barcode"
                 name="barcode"
@@ -272,44 +271,6 @@ function ProductsPage() {
               <TextField
                 fullWidth
                 select
-                label="Category *"
-                name="category_id"
-                value={newProduct.category_id}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, category_id: e.target.value })
-                }
-              >
-                {categories.map((c) => (
-                  <MenuItem key={c.category_id} value={c.category_id}>
-                    {c.category_name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            <Grid sx={{ minWidth: 230 }}>
-              <TextField
-                fullWidth
-                select
-                label="Brand *"
-                name="brand_id"
-                value={newProduct.brand_id}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, brand_id: e.target.value })
-                }
-              >
-                {brands.map((b) => (
-                  <MenuItem key={b.brand_id} value={b.brand_id}>
-                    {b.brand_name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            <Grid sx={{ minWidth: 230 }}>
-              <TextField
-                fullWidth
-                select
                 label="Regular Item"
                 name="regular_item"
                 value={newProduct.regular_item}
@@ -325,23 +286,6 @@ function ProductsPage() {
               </TextField>
             </Grid>
 
-            <Grid sx={{ minWidth: 230 }}>
-              <TextField
-                fullWidth
-                select
-                label="Unit"
-                name="unit"
-                value={newProduct.unit}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, unit: e.target.value })
-                }
-              >
-                <MenuItem value="pkt">Packet</MenuItem>
-                <MenuItem value="weight">Weight</MenuItem>
-                <MenuItem value="length">Length</MenuItem>
-              </TextField>
-            </Grid>
-
             {["stock_qty", "cost_price", "actual_price", "selling_price"].map(
               (field) => (
                 <Grid key={field} xs={12} sm={6} sx={{ minWidth: 230 }}>
@@ -352,10 +296,10 @@ function ProductsPage() {
                       field === "stock_qty"
                         ? "Stock Quantity"
                         : field === "cost_price"
-                        ? "Cost Price (Rs.) *"
-                        : field === "actual_price"
-                        ? "Actual Price (Rs.) *"
-                        : "Selling Price (Rs.) *"
+                          ? "Cost Price (Rs.) *"
+                          : field === "actual_price"
+                            ? "Actual Price (Rs.) *"
+                            : "Selling Price (Rs.) *"
                     }
                     name={field}
                     value={newProduct[field]}
@@ -367,16 +311,20 @@ function ProductsPage() {
                     }
                   />
                 </Grid>
-              )
+              ),
             )}
           </Grid>
         </DialogContent>
 
         <DialogActions sx={{ p: 3, gap: 2 }}>
-          <Button onClick={() => setAddDialogOpen(false)} variant="outlined">
+          <Button
+            onClick={() => setAddDialogOpen(false)}
+            variant="outlined"
+            tabIndex={2}
+          >
             Cancel
           </Button>
-          <Button onClick={handleAddProduct} variant="contained">
+          <Button onClick={handleAddProduct} variant="contained" tabIndex={1}>
             Add Product
           </Button>
         </DialogActions>
@@ -442,70 +390,6 @@ function ProductsPage() {
 
             <Grid sx={{ xs: 12, minWidth: 250 }}>
               <TextField
-                select
-                fullWidth
-                sx={{ minWidth: 230 }}
-                label="Category Name"
-                value={editProduct.category_id}
-                onChange={(e) =>
-                  setEditProduct({
-                    ...editProduct,
-                    category_id: e.target.value,
-                  })
-                }
-              >
-                {categories.map((ctg) => (
-                  <MenuItem key={ctg.category_id} value={ctg.category_id}>
-                    {ctg.category_name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            <Grid sx={{ xs: 12, minWidth: 250 }}>
-              <TextField
-                select
-                fullWidth
-                sx={{ minWidth: 230 }}
-                label="Brand Name"
-                value={editProduct.brand_id}
-                onChange={(e) =>
-                  setEditProduct({
-                    ...editProduct,
-                    brand_id: e.target.value,
-                  })
-                }
-              >
-                {brands.map((br) => (
-                  <MenuItem key={br.brand_id} value={br.brand_id}>
-                    {br.brand_name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            <Grid sx={{ xs: 12, minWidth: 250 }}>
-              <TextField
-                select
-                fullWidth
-                sx={{ minWidth: 230 }}
-                label="Unit"
-                value={editProduct.unit}
-                onChange={(e) =>
-                  setEditProduct({
-                    ...editProduct,
-                    unit: e.target.value,
-                  })
-                }
-              >
-                <MenuItem value="pkt">Packet</MenuItem>
-                <MenuItem value="weight">Weight</MenuItem>
-                <MenuItem value="length">Length</MenuItem>
-              </TextField>
-            </Grid>
-
-            <Grid sx={{ xs: 12, minWidth: 250 }}>
-              <TextField
                 fullWidth
                 label="Stock Qty"
                 value={editProduct.stock_qty}
@@ -563,10 +447,14 @@ function ProductsPage() {
         </DialogContent>
 
         <DialogActions sx={{ padding: 2 }}>
-          <Button variant="outlined" onClick={() => setUpdateDialogOpen(false)}>
+          <Button
+            variant="outlined"
+            onClick={() => setUpdateDialogOpen(false)}
+            tabIndex={2}
+          >
             Cancel
           </Button>
-          <Button variant="contained" onClick={handleUpdateSubmit}>
+          <Button variant="contained" onClick={handleUpdateSubmit} tabIndex={1}>
             Submit
           </Button>
         </DialogActions>
@@ -647,7 +535,6 @@ function ProductsPage() {
                     </IconButton>
                   </TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Product Name</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Brand</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>
                     Stock Qty
                     <IconButton
@@ -684,10 +571,7 @@ function ProductsPage() {
                     >
                       <TableCell>{product.product_id}</TableCell>
                       <TableCell>{product.product_name}</TableCell>
-                      <TableCell>
-                        {brands.find((b) => b.brand_id === product.brand_id)
-                          ?.brand_name || "—"}
-                      </TableCell>
+
                       <TableCell>
                         {Number(product.stock_qty || 0).toFixed(2)}
                       </TableCell>
