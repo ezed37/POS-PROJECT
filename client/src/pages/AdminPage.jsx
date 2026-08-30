@@ -10,8 +10,6 @@ import ThemeContext from "../theme/ThemeContext.jsx";
 import AuthContext from "../auth/AuthContext.jsx";
 import UsersPage from "./UsersPage.jsx";
 import ProductsPage from "./ProductsPage.jsx";
-import CategoriesPage from "./CategoriesPage.jsx";
-import BrandsPage from "./BrandsPage.jsx";
 import SalesPage from "./SalesPage.jsx";
 import ReportPage from "./ReportPage.jsx";
 import CustomerPage from "./CustomerPage.jsx";
@@ -54,15 +52,13 @@ export default function AdminPage() {
           mode={mode}
         />
 
-        <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, md: 3 } }}>
+        <Box component="main" sx={{ flexGrow: 1 }}>
           <Routes>
             {user ? (
               <>
                 <Route path="/" element={<DashboardPage />} />
                 <Route path="/users" element={<UsersPage />} />
                 <Route path="/products" element={<ProductsPage />} />
-                <Route path="/categories" element={<CategoriesPage />} />
-                <Route path="/brands" element={<BrandsPage />} />
                 <Route path="/sales" element={<SalesPage />} />
                 <Route path="/reports" element={<ReportPage />} />
                 <Route path="/customers" element={<CustomerPage />} />

@@ -91,7 +91,7 @@ function UsersPage() {
   const filteredUsers = users.filter(
     (u) =>
       (u?.firstName?.toLowerCase() || "").includes(search.toLowerCase()) ||
-      (u?.lastName?.toLowerCase() || "").includes(search.toLowerCase())
+      (u?.lastName?.toLowerCase() || "").includes(search.toLowerCase()),
   );
 
   const handleInputChange = (e) => {
@@ -164,7 +164,7 @@ function UsersPage() {
     try {
       await updateUser(editUser._id, editUser);
       setUsers((prev) =>
-        prev.map((u) => (u._id === editUser._id ? editUser : u))
+        prev.map((u) => (u._id === editUser._id ? editUser : u)),
       );
       setAlerts({
         open: true,
@@ -628,7 +628,7 @@ function UsersPage() {
                       >
                         {header}
                       </TableCell>
-                    )
+                    ),
                   )}
                 </TableRow>
               </TableHead>

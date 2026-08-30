@@ -156,7 +156,13 @@ const Dashboard = ({ chartData }) => {
   });
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "background.default",
+        p: { xs: 2, sm: 3, md: 4 },
+      }}
+    >
       <Box maxWidth="1200px">
         {/* Header */}
         <Box mb={5}>

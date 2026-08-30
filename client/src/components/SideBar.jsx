@@ -23,8 +23,6 @@ const Sidebar = ({ open, setOpen, isMobile }) => {
     { text: "Dashboard", icon: <DashboardIcon />, path: "/" },
     { text: "Users", icon: <PeopleIcon />, path: "/users" },
     { text: "Products", icon: <InventoryIcon />, path: "/products" },
-    { text: "Categories", icon: <CategoryIcon />, path: "/categories" },
-    { text: "Brands", icon: <BrandingWatermarkIcon />, path: "/brands" },
     { text: "Sales", icon: <AttachMoneyIcon />, path: "/sales" },
     { text: "Reports", icon: <AssessmentIcon />, path: "/reports" },
     { text: "Customers", icon: <EmojiPeopleIcon />, path: "/customers" },
