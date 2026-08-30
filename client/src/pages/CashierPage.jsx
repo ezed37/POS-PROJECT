@@ -22,6 +22,7 @@ import {
   Snackbar,
   Alert,
   MenuItem,
+  Autocomplete,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -75,8 +76,6 @@ export default function CashierPage() {
     updateQty,
     subtotal,
     finalTotal,
-    discount,
-    setDiscount,
     clearCart,
     costSubtotal,
     customerTotalProfit,
@@ -118,13 +117,46 @@ export default function CashierPage() {
   const regularProducts = products.filter((p) => p.regular_item);
 
   const handleFormInput = () => {
-    const found = products.find((p) => p.barcode === search.trim());
-    if (!found) {
-      setAlerts({ open: true, type: "error", msg: "Product not found!" });
-      setSearch("");
-    } else {
-      handleAddItem(found);
+    const searchValue = search.trim().toLowerCase();
+
+    if (!searchValue) return;
+
+    // First try exact barcode
+    const foundByBarcode = products.find(
+      (p) => String(p.barcode).toLowerCase() === searchValue,
+    );
+
+    if (foundByBarcode) {
+      handleAddItem(foundByBarcode);
+      return;
     }
+
+    // Then try exact product name
+    const foundByName = products.find(
+      (p) => p.product_name.toLowerCase() === searchValue,
+    );
+
+    if (foundByName) {
+      handleAddItem(foundByName);
+      return;
+    }
+
+    const foundBySinName = products.find(
+      (p) => p.product_name_singl.toLowerCase() === searchValue,
+    );
+
+    if (foundBySinName) {
+      handleAddItem(foundBySinName);
+      return;
+    }
+
+    setAlerts({
+      open: true,
+      type: "error",
+      msg: "Product not found!",
+    });
+
+    setSearch("");
   };
 
   const handleAddItem = (product) => {
@@ -187,7 +219,6 @@ export default function CashierPage() {
       printReceipt({
         cart: [...cart],
         subtotal,
-        discount,
         finalTotal,
         customerCash: cash,
         balance: bal,
@@ -195,7 +226,6 @@ export default function CashierPage() {
       });
 
       clearCart();
-      setDiscount(0);
       setCustomerCash("");
       setBalance(null);
       setSearch("");
@@ -263,7 +293,6 @@ export default function CashierPage() {
       user_name: user.username,
       reference: "INV-" + Date.now(),
       sub_total: subtotal,
-      discount: discount,
       final_total: finalTotal,
       final_cost: costSubtotal,
       items: itemsData,
@@ -285,7 +314,6 @@ export default function CashierPage() {
       window.confirm("Are you sure want to clear cart & start a new sale? ")
     ) {
       clearCart();
-      setDiscount(0);
       setCustomerCash("");
       setBalance(null);
       setSearch("");
@@ -521,27 +549,93 @@ export default function CashierPage() {
               <Box
                 sx={{ display: "flex", gap: 1, mb: 2, alignItems: "center" }}
               >
-                <TextField
-                  autoFocus
-                  placeholder="Scan Barcode > > >"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleFormInput()}
-                  inputRef={searchRef}
-                  size="small"
-                  sx={{
-                    flex: 1,
-                    "& .MuiOutlinedInput-root": { borderRadius: 1.5 },
+                <Autocomplete
+                  freeSolo
+                  fullWidth
+                  options={products}
+                  value={null}
+                  inputValue={search}
+                  onInputChange={(event, newInputValue) => {
+                    setSearch(newInputValue);
                   }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => setOpenScanner(true)}>
-                          <CameraAltIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
+                  getOptionLabel={(option) => option.product_name || ""}
+                  filterOptions={(options, { inputValue }) => {
+                    const value = inputValue.toLowerCase().trim();
+
+                    if (!value) return options;
+
+                    return options.filter(
+                      (p) =>
+                        p.product_name.toLowerCase().includes(value) ||
+                        String(p.barcode).toLowerCase().includes(value) ||
+                        String(p.product_name_singl || "").includes(
+                          inputValue.trim(),
+                        ),
+                    );
                   }}
+                  onChange={(event, selectedProduct) => {
+                    if (selectedProduct) {
+                      handleAddItem(selectedProduct);
+                    }
+                  }}
+                  renderOption={(props, product) => (
+                    <Box
+                      component="li"
+                      {...props}
+                      key={product._id}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        py: 1.2,
+                      }}
+                    >
+                      <Box>
+                        <Typography fontWeight={600}>
+                          {product.product_name}
+                        </Typography>
+
+                        <Typography variant="caption" color="text.secondary">
+                          Barcode: {product.barcode}
+                        </Typography>
+                      </Box>
+
+                      <Typography fontWeight={700} color="primary.main">
+                        Rs. {Number(product.selling_price).toFixed(2)}
+                      </Typography>
+                    </Box>
+                  )}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      autoFocus
+                      inputRef={searchRef}
+                      placeholder="Search Product / Scan Barcode..."
+                      size="small"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleFormInput();
+                        }
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton onClick={() => setOpenScanner(true)}>
+                              <CameraAltIcon />
+                            </IconButton>
+
+                            {params.InputProps.endAdornment}
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 1.5,
+                        },
+                      }}
+                    />
+                  )}
                 />
                 <Button
                   variant="outlined"
@@ -644,19 +738,6 @@ export default function CashierPage() {
               <Divider sx={{ my: 1 }} />
 
               <Box sx={{ p: 2, flexShrink: 0 }}>
-                <TextField
-                  fullWidth
-                  label="Discount %"
-                  type="number"
-                  value={discount}
-                  onChange={(e) => setDiscount(Number(e.target.value))}
-                  inputProps={{ min: 0, max: 100 }}
-                  size="small"
-                  sx={{
-                    mb: 1,
-                    "& .MuiOutlinedInput-root": { borderRadius: 1.5 },
-                  }}
-                />
                 <Paper variant="outlined" sx={{ p: 1.5, mb: 2 }}>
                   <Box
                     sx={{
@@ -664,41 +745,19 @@ export default function CashierPage() {
                       justifyContent: "space-between",
                       mb: 0.5,
                     }}
-                  >
-                    <Typography color="text.secondary" variant="body2">
-                      Subtotal:
-                    </Typography>
-                    <Typography fontWeight={600} variant="body2">
-                      Rs. {subtotal}
-                    </Typography>
-                  </Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      mb: 0.5,
-                    }}
-                  >
-                    <Typography color="text.secondary" variant="body2">
-                      Discount:
-                    </Typography>
-                    <Typography color="error" fontWeight={600} variant="body2">
-                      {discount} %
-                    </Typography>
-                  </Box>
-                  <Divider sx={{ my: 1 }} />
+                  ></Box>
                   <Box
                     sx={{ display: "flex", justifyContent: "space-between" }}
                   >
                     <Typography variant="subtitle1" fontWeight={600}>
-                      Final Total:
+                      Sub Total:
                     </Typography>
                     <Typography
                       variant="subtitle1"
                       fontWeight={700}
                       color="primary.main"
                     >
-                      Rs. {finalTotal}
+                      Rs. {subtotal}
                     </Typography>
                   </Box>
                 </Paper>
