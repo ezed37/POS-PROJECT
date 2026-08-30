@@ -69,6 +69,9 @@ export default function CashierPage() {
     customer_name: "N/A",
   });
 
+  const [balanceBeforeDialog, setBalanceBeforeDialog] = useState(false);
+  const [balanceBeforeAmount, setBalanceBeforeAmount] = useState("");
+
   const {
     addItem,
     cart,
@@ -113,6 +116,36 @@ export default function CashierPage() {
     fetchProducts();
     fetchCustomers();
   }, []);
+
+  const handleAddBalanceBefore = () => {
+    const amount = Number(balanceBeforeAmount);
+
+    if (!amount || amount <= 0) {
+      setAlerts({
+        open: true,
+        type: "error",
+        msg: "Please enter a valid balance amount",
+      });
+      return;
+    }
+
+    const balanceItem = {
+      _id: `balance-before-${Date.now()}`,
+      product_name: "ගෙවිය යුතු මුදල",
+      barcode: "",
+      cost_price: 0,
+      selling_price: amount,
+      qty: 1,
+      isBalanceBefore: true,
+    };
+
+    addItem(balanceItem, 1);
+
+    setBalanceBeforeAmount("");
+    setBalanceBeforeDialog(false);
+
+    focusSearchInput(searchRef);
+  };
 
   const regularProducts = products.filter((p) => p.regular_item);
 
@@ -270,10 +303,15 @@ export default function CashierPage() {
 
   const handleUpdateStock = async () => {
     try {
-      const updates = cart.map((p) => ({
-        product_id: p._id,
-        stock_qty: p.qty,
-      }));
+      const updates = cart
+        .filter((p) => !p.isBalanceBefore)
+        .map((p) => ({
+          product_id: p._id,
+          stock_qty: p.qty,
+        }));
+
+      if (updates.length === 0) return;
+
       await updateProductBulk(updates);
     } catch (err) {
       console.error(err);
@@ -329,7 +367,7 @@ export default function CashierPage() {
   useShortcuts({ ctrl: true, key: "/" }, () => handNewSale());
 
   //Auto logout when use is inactive
-  AutoLogout();
+  //AutoLogout();
 
   //Camera handle
   const handleCloseScanner = () => {
@@ -651,6 +689,20 @@ export default function CashierPage() {
                 >
                   NEW SALE
                 </Button>
+
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  onClick={() => setBalanceBeforeDialog(true)}
+                  size="small"
+                  sx={{
+                    whiteSpace: "nowrap",
+                    py: 0.5,
+                    px: 1.5,
+                  }}
+                >
+                  පෙර ශේෂය
+                </Button>
               </Box>
 
               <TableContainer
@@ -869,6 +921,63 @@ export default function CashierPage() {
           {alerts.msg}
         </Alert>
       </Snackbar>
+
+      <Dialog
+        open={balanceBeforeDialog}
+        onClose={() => setBalanceBeforeDialog(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Add Previous Balance</DialogTitle>
+
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Enter the amount that the customer has not paid from a previous
+            bill.
+          </Typography>
+
+          <TextField
+            fullWidth
+            autoFocus
+            label="Balance Before/පෙර ශේෂය"
+            type="number"
+            value={balanceBeforeAmount}
+            onChange={(e) => setBalanceBeforeAmount(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                handleAddBalanceBefore();
+              }
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">Rs.</InputAdornment>
+              ),
+            }}
+          />
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setBalanceBeforeDialog(false);
+              setBalanceBeforeAmount("");
+              focusSearchInput(searchRef);
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={handleAddBalanceBefore}
+          >
+            Add Balance
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
