@@ -555,6 +555,7 @@ export default function CashierPage() {
                   options={products}
                   value={null}
                   inputValue={search}
+                  autoHighlight
                   onInputChange={(event, newInputValue) => {
                     setSearch(newInputValue);
                   }}
@@ -568,9 +569,9 @@ export default function CashierPage() {
                       (p) =>
                         p.product_name.toLowerCase().includes(value) ||
                         String(p.barcode).toLowerCase().includes(value) ||
-                        String(p.product_name_singl || "").includes(
-                          inputValue.trim(),
-                        ),
+                        String(p.product_name_singl || "")
+                          .toLowerCase()
+                          .includes(inputValue.trim()),
                     );
                   }}
                   onChange={(event, selectedProduct) => {
