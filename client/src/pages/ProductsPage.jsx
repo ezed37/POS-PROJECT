@@ -33,8 +33,6 @@ import {
   getAllProducts,
   updateProduct,
 } from "../api/productsApi";
-import { getAllCategory } from "../api/categoriesApi";
-import { getAllBrand } from "../api/brandsApi";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -52,8 +50,6 @@ function ProductsPage() {
     msg: "",
   });
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
   const [search, setSearch] = useState("");
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
@@ -62,10 +58,7 @@ function ProductsPage() {
     product_id: "",
     barcode: "",
     product_name: "",
-    category_id: "",
-    brand_id: "",
     regular_item: false,
-    unit: "pkt",
     stock_qty: 0,
     cost_price: 0,
     actual_price: 0,
@@ -105,19 +98,6 @@ function ProductsPage() {
     }));
   };
 
-  const loadCategoriesAndBrands = async () => {
-    const [catRes, brandRes] = await Promise.all([
-      getAllCategory(),
-      getAllBrand(),
-    ]);
-    setCategories(catRes.data);
-    setBrands(brandRes.data);
-  };
-
-  useEffect(() => {
-    loadCategoriesAndBrands();
-  }, []);
-
   const openAddDialog = () => {
     setAddDialogOpen(true);
   };
@@ -130,8 +110,6 @@ function ProductsPage() {
   const handleAddProduct = async () => {
     if (
       !newProduct.product_name ||
-      !newProduct.category_id ||
-      !newProduct.brand_id ||
       newProduct.cost_price <= 0 ||
       newProduct.actual_price <= 0 ||
       newProduct.selling_price <= 0
@@ -157,10 +135,7 @@ function ProductsPage() {
         product_id: "",
         barcode: "",
         product_name: "",
-        category_id: "",
-        brand_id: "",
         regular_item: false,
-        unit: "pkt",
         stock_qty: 0,
         cost_price: 0,
         actual_price: 0,
@@ -174,8 +149,6 @@ function ProductsPage() {
   const handleUpdateSubmit = async () => {
     if (
       !editProduct.product_name ||
-      !editProduct.category_id ||
-      !editProduct.brand_id ||
       editProduct.cost_price <= 0 ||
       editProduct.actual_price <= 0 ||
       editProduct.selling_price <= 0

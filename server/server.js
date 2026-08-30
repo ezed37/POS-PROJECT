@@ -4,8 +4,6 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import usersRoute from "./routes/usersRoute.js";
 import productsRoute from "./routes/productsRoute.js";
-import brandsRoute from "./routes/brandsRoute.js";
-import categoriesRoute from "./routes/categoriesRoute.js";
 import salesRoute from "./routes/salesRoute.js";
 import customerRoute from "./routes/customersRoute.js";
 

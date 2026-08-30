@@ -15,16 +15,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    category_id: {
-      type: String,
-      ref: "category",
-      uppercase: true,
-    },
-    brand_id: {
-      type: String,
-      ref: "brand",
-      uppercase: true,
-    },
+
     regular_item: {
       type: Boolean,
       required: true,
