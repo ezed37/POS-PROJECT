@@ -396,7 +396,7 @@ function ProductsPage() {
               <TextField
                 fullWidth
                 label="Stock Qty"
-                value={editProduct.stock_qty}
+                value={editProduct.stock_qty.toFixed(2)}
                 onChange={(e) =>
                   setEditProduct({
                     ...editProduct,
