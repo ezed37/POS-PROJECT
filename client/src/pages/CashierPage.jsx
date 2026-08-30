@@ -84,6 +84,9 @@ export default function CashierPage() {
     customerTotalProfit,
   } = useCart([]);
 
+  const roundedFinalTotal = Math.round(finalTotal);
+  const roundedSubtotal = Math.round(subtotal);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -231,7 +234,7 @@ export default function CashierPage() {
 
   const finishSale = async () => {
     const cash = Number(customerCash);
-    if (isNaN(cash) || cash < finalTotal) {
+    if (isNaN(cash) || cash < roundedFinalTotal) {
       setAlerts({
         open: true,
         type: "error",
@@ -239,7 +242,7 @@ export default function CashierPage() {
       });
       return;
     }
-    const bal = cash - finalTotal;
+    const bal = cash - roundedFinalTotal;
     setBalance(bal);
 
     await Promise.all([
@@ -330,8 +333,8 @@ export default function CashierPage() {
     const salesData = {
       user_name: user.username,
       reference: "INV-" + Date.now(),
-      sub_total: subtotal,
-      final_total: finalTotal,
+      sub_total: roundedSubtotal,
+      final_total: roundedFinalTotal,
       final_cost: costSubtotal,
       items: itemsData,
     };
@@ -525,7 +528,7 @@ export default function CashierPage() {
             ))}
           </TextField>
           <Typography variant="h6" sx={{ mb: 2 }}>
-            Total Payable: Rs. {finalTotal}
+            Total Payable: Rs. {roundedSubtotal}
           </Typography>
           <TextField
             label="Cash from the customer"
@@ -810,7 +813,7 @@ export default function CashierPage() {
                       fontWeight={700}
                       color="primary.main"
                     >
-                      Rs. {subtotal}
+                      Rs. {roundedSubtotal}
                     </Typography>
                   </Box>
                 </Paper>
