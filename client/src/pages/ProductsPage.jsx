@@ -58,6 +58,7 @@ function ProductsPage() {
     product_id: "",
     barcode: "",
     product_name: "",
+    product_name_singl: "",
     regular_item: false,
     stock_qty: 0,
     cost_price: 0,
@@ -135,6 +136,7 @@ function ProductsPage() {
         product_id: "",
         barcode: "",
         product_name: "",
+        product_name_singl: "",
         regular_item: false,
         stock_qty: 0,
         cost_price: 0,
@@ -243,6 +245,21 @@ function ProductsPage() {
             <Grid sx={{ minWidth: 230 }}>
               <TextField
                 fullWidth
+                label="Product Name (Singlish)"
+                name="product_name_singl"
+                value={newProduct.product_name_singl}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    product_name_singl: e.target.value,
+                  })
+                }
+              />
+            </Grid>
+
+            <Grid sx={{ minWidth: 230 }}>
+              <TextField
+                fullWidth
                 select
                 label="Regular Item"
                 name="regular_item"
@@ -331,6 +348,20 @@ function ProductsPage() {
             </Grid>
 
             <Grid sx={{ xs: 12, sm: 6, mt: 2, minWidth: 250 }}>
+              <TextField
+                fullWidth
+                label="Product Name (Singlish)"
+                value={editProduct.product_name_singl}
+                onChange={(e) =>
+                  setEditProduct({
+                    ...editProduct,
+                    product_name_singl: e.target.value,
+                  })
+                }
+              />
+            </Grid>
+
+            <Grid sx={{ xs: 12, sm: 6, minWidth: 250 }}>
               <TextField
                 fullWidth
                 label="Barcode"
@@ -509,6 +540,9 @@ function ProductsPage() {
                   </TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Product Name</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>
+                    Product Name (Sing)
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>
                     Stock Qty
                     <IconButton
                       size="small"
@@ -544,6 +578,7 @@ function ProductsPage() {
                     >
                       <TableCell>{product.product_id}</TableCell>
                       <TableCell>{product.product_name}</TableCell>
+                      <TableCell>{product.product_name_singl}</TableCell>
 
                       <TableCell>
                         {Number(product.stock_qty || 0).toFixed(2)}

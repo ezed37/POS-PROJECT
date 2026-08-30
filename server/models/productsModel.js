@@ -16,6 +16,10 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
+    product_name_singl: {
+      type: String,
+    },
+
     regular_item: {
       type: Boolean,
       required: true,
