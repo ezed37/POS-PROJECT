@@ -367,7 +367,7 @@ export default function CashierPage() {
   useShortcuts({ ctrl: true, key: "/" }, () => handNewSale());
 
   //Auto logout when use is inactive
-  //AutoLogout();
+  AutoLogout();
 
   //Camera handle
   const handleCloseScanner = () => {
@@ -601,7 +601,7 @@ export default function CashierPage() {
                   filterOptions={(options, { inputValue }) => {
                     const value = inputValue.toLowerCase().trim();
 
-                    if (!value) return options;
+                    if (!value) return [];
 
                     return options.filter(
                       (p) =>
